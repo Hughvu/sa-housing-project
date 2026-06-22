@@ -1,0 +1,642 @@
+Suburb,Unit_Total_Median,House_Total_Median,Total_Median,Total_Count,Rent_Score,Housing_Pressure_Score,Housing_Pressure_Category
+Panorama,,1000.0,1000.0,,5,5,Very High
+Heathpool,,1000.0,1000.0,5.0,5,5,Very High
+Stonyfell,,1000.0,1000.0,,5,5,Very High
+Stirling,,970.0,970.0,,5,5,Very High
+Belair,440.0,930.0,925.0,,5,5,Very High
+Red Banks,,900.0,900.0,,5,5,Very High
+Teringie,570.0,1000.0,887.5,,5,5,Very High
+Netherby,415.0,1300.0,857.5,,5,5,Very High
+Uraidla,,850.0,850.0,,5,5,Very High
+Gilberton,515.0,1100.0,842.5,10.0,4,4,High
+Beaumont,,835.0,835.0,10.0,4,4,High
+Summertown,,825.0,825.0,,4,4,High
+Rosslyn Park,482.5,810.0,810.0,5.0,4,4,High
+Mitcham,572.5,820.0,807.5,15.0,4,4,High
+Stepney,,797.5,797.5,10.0,4,4,High
+Hazelwood Park,555.0,800.0,780.0,10.0,4,4,High
+Malvern,530.0,1250.0,780.0,10.0,4,4,High
+Gillman,,772.5,772.5,,4,4,High
+Craigburn Farm,,770.0,770.0,,4,4,High
+Wattle Park,,765.0,765.0,,4,4,High
+Hewett,,762.5,762.5,,4,4,High
+Hilton,,750.0,750.0,,4,4,High
+Crafers West,,750.0,750.0,,4,4,High
+Glen Osmond,380.0,950.0,750.0,15.0,4,4,High
+Highgate,790.0,750.0,750.0,10.0,4,4,High
+One Tree Hill,,750.0,750.0,,4,4,High
+Rose Park,550.0,900.0,750.0,20.0,4,4,High
+Mingbool,,750.0,750.0,,4,4,High
+Mount Osmond,,750.0,750.0,,4,4,High
+Frewville,730.0,800.0,749.0,5.0,3,3,Medium
+Walkley Heights,,745.0,745.0,10.0,3,3,Medium
+St Georges,575.0,780.0,740.0,10.0,3,3,Medium
+Fulham Gardens,485.0,800.0,735.0,40.0,3,3,Medium
+Kersbrook,,730.0,730.0,,3,3,Medium
+Bridgewater,,725.0,725.0,10.0,3,3,Medium
+Colonel Light Gardens,395.0,750.0,725.0,10.0,3,3,Medium
+Clarendon,,720.0,720.0,,3,3,Medium
+College Park,705.0,670.0,705.0,5.0,3,3,Medium
+Oakbank,,700.0,700.0,,3,3,Medium
+Roseworthy,,700.0,700.0,,3,3,Medium
+Meadows,,700.0,700.0,,3,3,Medium
+Sheidow Park,,700.0,700.0,15.0,3,3,Medium
+Kidman Park,470.0,710.0,700.0,25.0,3,3,Medium
+Henley Beach,560.0,880.0,700.0,35.0,3,3,Medium
+Ridleyton,700.0,695.0,692.5,10.0,3,3,Medium
+Onkaparinga Hills,,690.0,690.0,5.0,3,3,Medium
+Woodforde,572.5,700.0,690.0,10.0,3,3,Medium
+Regency Park,,690.0,690.0,,3,3,Medium
+Tranmere,490.0,695.0,687.5,35.0,3,3,Medium
+Northgate,375.0,695.0,687.5,30.0,3,3,Medium
+Flagstaff Hill,,687.5,687.5,20.0,3,3,Medium
+Lower Mitcham,375.0,690.0,685.0,,3,3,Medium
+Eastwood,697.5,637.5,685.0,10.0,3,3,Medium
+Netley,430.0,750.0,685.0,15.0,3,3,Medium
+Balhannah,,682.5,682.5,,3,3,Medium
+Sellicks Hill,,680.0,680.0,,3,3,Medium
+Dover Gardens,,680.0,680.0,25.0,3,3,Medium
+Seacliff,500.0,700.0,680.0,15.0,3,3,Medium
+Macdonald Park,,680.0,680.0,,3,3,Medium
+West Lakes,530.0,700.0,680.0,35.0,3,3,Medium
+Blewitt Springs,,680.0,680.0,,3,3,Medium
+Maylands,595.0,930.0,677.5,10.0,3,3,Medium
+Unley Park,575.0,720.0,675.0,10.0,3,3,Medium
+Eden Hills,,677.5,675.0,5.0,3,3,Medium
+North Brighton,250.0,750.0,675.0,15.0,3,3,Medium
+Greenock,,675.0,675.0,,3,3,Medium
+Waterloo Corner,,675.0,675.0,,3,3,Medium
+Riverlea Park,,670.0,670.0,35.0,3,3,Medium
+Littlehampton,,670.0,670.0,,3,3,Medium
+Westbourne Park,497.5,735.0,670.0,15.0,3,3,Medium
+Moana,570.0,677.5,670.0,15.0,3,3,Medium
+North Haven,500.0,670.0,670.0,20.0,3,3,Medium
+Trott Park,,667.5,667.5,,3,3,Medium
+Kingswood,575.0,750.0,667.5,15.0,3,3,Medium
+Moorak,,665.0,665.0,,3,3,Medium
+Bowden,660.0,765.0,665.0,65.0,3,3,Medium
+Hackney,590.0,665.0,665.0,,3,3,Medium
+Grange,470.0,775.0,662.5,40.0,3,3,Medium
+Glynde,530.0,715.0,662.5,20.0,3,3,Medium
+Magill,450.0,680.0,660.0,75.0,3,3,Medium
+Hampstead Gardens,440.0,670.0,660.0,15.0,3,3,Medium
+Morphettville,550.0,690.0,655.0,25.0,3,3,Medium
+Hillcrest,430.0,680.0,655.0,30.0,3,3,Medium
+Sturt,172.5,657.5,652.5,20.0,3,3,Medium
+Lightsview,587.5,675.0,650.0,45.0,3,3,Medium
+Murray Bridge North,,650.0,650.0,,3,3,Medium
+Pasadena,480.0,665.0,650.0,10.0,3,3,Medium
+Wistow,,650.0,650.0,,3,3,Medium
+Two Wells,400.0,670.0,650.0,30.0,3,3,Medium
+Aldinga,445.0,650.0,650.0,,3,3,Medium
+Aldgate,,650.0,650.0,5.0,3,3,Medium
+Glenalta,,650.0,650.0,5.0,3,3,Medium
+Waitpinga,,650.0,650.0,,3,3,Medium
+Port Adelaide,565.0,650.0,650.0,30.0,3,3,Medium
+Glengowrie,522.5,690.0,650.0,25.0,3,3,Medium
+Hallett Cove,545.0,655.0,650.0,45.0,3,3,Medium
+Greenacres,336.79999999999995,690.0,650.0,15.0,3,3,Medium
+North Adelaide,600.0,720.0,650.0,130.0,3,3,Medium
+Payneham South,550.0,650.0,650.0,10.0,3,3,Medium
+Marino,420.0,800.0,650.0,10.0,3,3,Medium
+Seaford Heights,,650.0,650.0,10.0,3,3,Medium
+Brighton,575.0,805.0,650.0,40.0,3,3,Medium
+Seaton,485.0,665.0,650.0,95.0,3,3,Medium
+Flaxman Valley (Mount Pleasan,,650.0,650.0,,3,3,Medium
+Warradale,520.0,690.0,650.0,40.0,3,3,Medium
+Newton,450.0,660.0,650.0,35.0,3,3,Medium
+Rostrevor,515.0,680.0,650.0,45.0,3,3,Medium
+Tennyson,570.0,895.0,650.0,5.0,3,3,Medium
+Fairview Park,,650.0,650.0,10.0,3,3,Medium
+Tonsley,620.0,675.0,650.0,30.0,3,3,Medium
+Port Noarlunga South,,650.0,650.0,15.0,3,3,Medium
+Hove,550.0,725.0,650.0,15.0,3,3,Medium
+Longwood,,650.0,650.0,,3,3,Medium
+Novar Gardens,360.0,695.0,647.5,10.0,2,2,Low
+Felixstow,490.0,695.0,645.0,30.0,2,2,Low
+Keyneton,,645.0,645.0,,2,2,Low
+Upper Sturt,,640.0,640.0,,2,2,Low
+Mclaren Flat,,640.0,640.0,,2,2,Low
+Campbelltown,510.0,670.0,640.0,110.0,2,2,Low
+Blackwood,505.0,650.0,640.0,15.0,2,2,Low
+Allenby Gardens,430.0,685.0,640.0,15.0,2,2,Low
+Largs North,500.0,730.0,640.0,30.0,2,2,Low
+Athelstone,575.0,650.0,640.0,40.0,2,2,Low
+Brompton,600.0,640.0,635.0,55.0,2,2,Low
+Vista,,635.0,635.0,,2,2,Low
+Ashford,495.0,780.0,635.0,15.0,2,2,Low
+Happy Valley,,630.0,630.0,25.0,2,2,Low
+Medindie Gardens,,630.0,630.0,,2,2,Low
+Lockleys,505.0,670.0,630.0,25.0,2,2,Low
+Modbury,499.0,650.0,630.0,60.0,2,2,Low
+Marion,630.0,620.0,630.0,30.0,2,2,Low
+Highbury,550.0,630.0,630.0,25.0,2,2,Low
+Aberfoyle Park,500.0,635.0,630.0,25.0,2,2,Low
+Golden Grove,535.0,660.0,630.0,35.0,2,2,Low
+Blair Athol,462.5,640.0,630.0,55.0,2,2,Low
+Woodville,620.0,680.0,630.0,10.0,2,2,Low
+Onkaparinga Heights,,630.0,630.0,5.0,2,2,Low
+Seacliff Park,485.0,630.0,630.0,10.0,2,2,Low
+South Brighton,550.0,725.0,630.0,25.0,2,2,Low
+Royston Park,605.0,807.5,630.0,15.0,2,2,Low
+Seacombe Heights,330.0,650.0,625.0,5.0,2,2,Low
+Angle Vale,,625.0,625.0,60.0,2,2,Low
+O Halloran Hill,,625.0,625.0,10.0,2,2,Low
+Park Holme,445.0,660.0,625.0,25.0,2,2,Low
+Cumberland Park,525.0,665.0,625.0,15.0,2,2,Low
+Unley,560.0,735.0,622.5,45.0,2,2,Low
+Modbury Heights,565.0,627.5,622.5,40.0,2,2,Low
+Walkerville,590.0,1050.0,622.5,25.0,2,2,Low
+Wingfield,,622.5,622.5,,2,2,Low
+Kensington,540.0,705.0,620.0,20.0,2,2,Low
+Torrensville,512.5,700.0,620.0,25.0,2,2,Low
+North Shields,,620.0,620.0,,2,2,Low
+Surrey Downs,520.0,620.0,620.0,15.0,2,2,Low
+Kingston Park,620.0,,620.0,,2,2,Low
+Reynella East,,620.0,620.0,,2,2,Low
+Parkside,530.0,737.5,620.0,60.0,2,2,Low
+Glandore,510.0,770.0,620.0,20.0,2,2,Low
+Old Reynella,467.5,630.0,620.0,20.0,2,2,Low
+Urrbrae,630.0,600.0,615.0,,2,2,Low
+Fulham,550.0,680.0,615.0,20.0,2,2,Low
+Clarence Gardens,550.0,640.0,615.0,15.0,2,2,Low
+Glenside,555.0,800.0,615.0,35.0,2,2,Low
+Gulfview Heights,,615.0,615.0,10.0,2,2,Low
+Findon,580.0,650.0,612.5,90.0,2,2,Low
+Seaford,515.0,610.0,610.0,25.0,2,2,Low
+Seacombe Gardens,312.5,650.0,610.0,20.0,2,2,Low
+Para Vista,,610.0,610.0,20.0,2,2,Low
+Linden Park,550.0,795.0,610.0,15.0,2,2,Low
+Northfield,495.0,620.0,610.0,45.0,2,2,Low
+Suttontown,,610.0,610.0,5.0,2,2,Low
+St Morris,500.0,860.0,610.0,10.0,2,2,Low
+Enfield,465.0,650.0,610.0,50.0,2,2,Low
+Gilles Plains,375.0,650.0,607.5,45.0,2,2,Low
+Clapham,512.5,692.5,607.5,5.0,2,2,Low
+Beulah Park,480.0,610.0,605.0,15.0,2,2,Low
+Dernancourt,,605.0,605.0,20.0,2,2,Low
+Old Noarlunga,,602.5,602.5,5.0,2,2,Low
+Sellicks Beach,,600.0,600.0,10.0,2,2,Low
+Glenelg,585.0,692.5,600.0,65.0,2,2,Low
+Oaklands Park,480.0,640.0,600.0,50.0,2,2,Low
+West Lakes Shore,550.0,700.0,600.0,10.0,2,2,Low
+Toorak Gardens,520.0,795.0,600.0,10.0,2,2,Low
+Welland,420.0,615.0,600.0,,2,2,Low
+Gepps Cross,,600.0,600.0,5.0,2,2,Low
+Woodville West,492.5,640.0,600.0,45.0,2,2,Low
+Korunye,,600.0,600.0,,2,2,Low
+New Port,480.0,700.0,600.0,15.0,2,2,Low
+Somerton Park,522.5,750.0,600.0,35.0,2,2,Low
+Montarra,,600.0,600.0,,2,2,Low
+Norwood,540.0,720.0,600.0,100.0,2,2,Low
+Para Hills,372.5,600.0,600.0,45.0,2,2,Low
+Hindmarsh Island,,600.0,600.0,,2,2,Low
+Burton,,600.0,600.0,25.0,2,2,Low
+Evanston Park,,600.0,600.0,25.0,2,2,Low
+Bethany,,600.0,600.0,,2,2,Low
+Kudla,,600.0,600.0,,2,2,Low
+Ferryden Park,450.0,620.0,600.0,30.0,2,2,Low
+Reynella,480.0,600.0,600.0,20.0,2,2,Low
+Redwood Park,,600.0,600.0,15.0,2,2,Low
+Port Noarlunga,435.0,630.0,600.0,20.0,2,2,Low
+Hectorville,550.0,670.0,600.0,50.0,2,2,Low
+Flinders Park,455.0,610.0,600.0,40.0,2,2,Low
+Woodcroft,450.0,600.0,600.0,30.0,2,2,Low
+Plympton Park,490.0,680.0,600.0,40.0,2,2,Low
+Ethelton,405.0,600.0,600.0,10.0,2,2,Low
+Parafield Gardens,475.0,600.0,600.0,105.0,2,2,Low
+Gawler South,420.0,600.0,600.0,10.0,2,2,Low
+South Plympton,445.0,700.0,600.0,35.0,2,2,Low
+Woodville South,550.0,680.0,600.0,25.0,2,2,Low
+Trinity Gardens,560.0,650.0,600.0,10.0,2,2,Low
+Melrose Park,480.0,630.0,600.0,25.0,2,2,Low
+Modbury North,,600.0,600.0,30.0,2,2,Low
+Albert Park,480.0,610.0,600.0,15.0,2,2,Low
+Windsor,,600.0,600.0,,2,2,Low
+Ingle Farm,321.6,600.0,600.0,70.0,2,2,Low
+Manningham,510.0,627.5,600.0,15.0,2,2,Low
+Crafers,,600.0,600.0,,2,2,Low
+Holden Hill,500.0,610.0,600.0,35.0,2,2,Low
+Valley View,440.0,615.0,600.0,45.0,2,2,Low
+Vale Park,450.0,667.5,597.5,10.0,2,2,Low
+Totness,,595.0,595.0,,2,2,Low
+Echunga,,595.0,595.0,,2,2,Low
+Nairne,485.0,600.0,595.0,25.0,2,2,Low
+Edwardstown,450.0,650.0,595.0,35.0,2,2,Low
+Virginia,,595.0,595.0,25.0,2,2,Low
+Lower Light,,595.0,595.0,,2,2,Low
+Mount Barker,517.5,600.0,595.0,235.0,2,2,Low
+Mclaren Vale,,605.0,592.5,10.0,2,2,Low
+Mile End,480.0,640.0,592.5,35.0,2,2,Low
+Torrens Park,450.0,870.0,592.5,10.0,2,2,Low
+Osborne,435.0,600.0,590.0,15.0,2,2,Low
+Burnside,530.0,750.0,590.0,15.0,2,2,Low
+Yatala Vale,,590.0,590.0,,2,2,Low
+Seaford Meadows,495.0,590.0,590.0,25.0,2,2,Low
+Templers,,590.0,590.0,,2,2,Low
+Fullarton,550.0,875.0,590.0,35.0,2,2,Low
+Myrtle Bank,550.0,672.5,590.0,15.0,2,2,Low
+Forreston,,590.0,590.0,,2,2,Low
+Kensington Park,560.0,755.0,590.0,15.0,2,2,Low
+Norton Summit,,590.0,590.0,,2,2,Low
+Port Willunga,450.0,592.5,590.0,15.0,2,2,Low
+St Clair,550.0,600.0,590.0,45.0,2,2,Low
+Hayborough,520.0,590.0,590.0,25.0,2,2,Low
+Hawthorn,500.0,750.0,587.5,10.0,2,2,Low
+Mansfield Park,260.0,607.5,585.0,20.0,2,2,Low
+Richmond,430.0,680.0,585.0,30.0,2,2,Low
+Mawson Lakes,505.0,645.0,585.0,170.0,2,2,Low
+Clovelly Park,550.0,610.0,585.0,30.0,2,2,Low
+Normanville,420.0,590.0,580.0,10.0,2,2,Low
+Kilkenny,585.0,570.0,580.0,15.0,2,2,Low
+Salisbury Park,,580.0,580.0,10.0,2,2,Low
+Kent Town,580.0,1250.0,580.0,15.0,2,2,Low
+Crystal Brook,,580.0,580.0,,2,2,Low
+Lobethal,,580.0,580.0,,2,2,Low
+Banksia Park,,580.0,580.0,5.0,2,2,Low
+Gawler East,480.0,580.0,580.0,35.0,2,2,Low
+Ridgehaven,505.0,610.0,580.0,40.0,2,2,Low
+Hyde Park,535.0,1300.0,580.0,15.0,2,2,Low
+Munno Para Down,,580.0,580.0,,2,2,Low
+Gumeracha,211.0,590.0,580.0,,2,2,Low
+Metro Total,500.0,600.0,580.0,10695.0,2,2,Low
+Hillbank,,580.0,580.0,10.0,2,2,Low
+Mitchell Park,430.0,620.0,580.0,60.0,2,2,Low
+Worrolong,,580.0,580.0,,2,2,Low
+Royal Park,480.0,640.0,580.0,30.0,2,2,Low
+Christies Beach,485.0,592.5,580.0,80.0,2,2,Low
+Semaphore Park,550.0,600.0,580.0,25.0,2,2,Low
+Wayville,550.0,845.0,580.0,15.0,2,2,Low
+Prospect,490.0,650.0,580.0,170.0,2,2,Low
+North Plympton,510.0,630.0,577.5,20.0,2,2,Low
+Aldinga Beach,485.0,600.0,577.5,80.0,2,2,Low
+Seaford Rise,,577.5,577.5,15.0,2,2,Low
+Marden,530.0,700.0,577.5,40.0,2,2,Low
+Munno Para Downs,,580.0,575.0,145.0,2,2,Low
+Renown Park,470.0,645.0,575.0,20.0,2,2,Low
+Willaston,485.0,600.0,575.0,15.0,2,2,Low
+Direk,,575.0,575.0,5.0,2,2,Low
+Croydon,425.0,710.0,575.0,,2,2,Low
+Maslin Beach,580.0,562.5,575.0,5.0,2,2,Low
+Forestville,550.0,600.0,572.5,15.0,2,2,Low
+St Agnes,550.0,610.0,572.5,20.0,2,2,Low
+Glenelg North,507.5,680.0,572.5,55.0,2,2,Low
+Greenwith,164.8,575.0,572.5,20.0,2,2,Low
+Evandale,450.0,625.0,570.0,10.0,2,2,Low
+Cheltenham,460.0,595.0,570.0,10.0,2,2,Low
+Klemzig,520.0,645.0,570.0,65.0,2,2,Low
+Athol Park,505.0,582.2,570.0,15.0,2,2,Low
+Woodside,,570.0,570.0,10.0,2,2,Low
+Kings Park,515.0,682.5,570.0,,2,2,Low
+Pooraka,472.5,597.5,570.0,50.0,2,2,Low
+Point Boston,,570.0,570.0,,2,2,Low
+Morphett Vale,470.0,580.0,570.0,155.0,2,2,Low
+Clearview,510.0,595.0,567.5,35.0,2,2,Low
+Camden Park,455.0,680.0,565.0,35.0,2,2,Low
+Noarlunga Downs,490.0,580.0,565.0,15.0,2,2,Low
+Paralowie,324.5,572.5,565.0,105.0,2,2,Low
+Salisbury East,440.0,577.5,565.0,70.0,2,2,Low
+Salisbury Plain,,565.0,565.0,10.0,2,2,Low
+Wynn Vale,540.0,580.0,565.0,20.0,2,2,Low
+Moculta,,562.5,562.5,,2,2,Low
+Blakeview,475.0,560.0,560.0,75.0,2,2,Low
+Dry Creek,,560.0,560.0,,2,2,Low
+Noarlunga Centre,465.0,590.0,560.0,,2,2,Low
+Salisbury Downs,300.0,575.0,560.0,55.0,2,2,Low
+Paradise,520.0,570.0,560.0,60.0,2,2,Low
+Eight Mile Creek,,560.0,560.0,,2,2,Low
+Firle,550.0,580.0,560.0,15.0,2,2,Low
+Brahma Lodge,560.0,560.0,560.0,25.0,2,2,Low
+Freeling,,560.0,560.0,,2,2,Low
+Kanmantoo,,560.0,560.0,,2,2,Low
+Encounter Bay,482.5,577.5,557.5,35.0,2,2,Low
+Glanville,464.0,640.0,557.5,10.0,2,2,Low
+Coffin Bay,,555.0,555.0,,2,2,Low
+Ascot Park,500.0,620.0,555.0,40.0,2,2,Low
+Craigmore,,560.0,555.0,55.0,2,2,Low
+Glenunga,560.0,500.0,555.0,20.0,2,2,Low
+Glenelg South,565.0,550.0,555.0,25.0,2,2,Low
+Nuriootpa,450.0,555.0,550.0,40.0,2,2,Low
+Mount Pleasant,,550.0,550.0,,2,2,Low
+Ob Flat,,550.0,550.0,,2,2,Low
+Dawesley,,550.0,550.0,,2,2,Low
+Port Broughton,275.0,580.0,550.0,10.0,2,2,Low
+Windsor Gardens,495.0,630.0,550.0,50.0,2,2,Low
+Lyndoch,,550.0,550.0,10.0,2,2,Low
+Tusmore,535.0,670.0,550.0,10.0,2,2,Low
+Andrews Farm,337.5,560.0,550.0,105.0,2,2,Low
+Tanunda,450.0,550.0,550.0,30.0,2,2,Low
+Compton,,550.0,550.0,,2,2,Low
+Jerusalem,,550.0,550.0,,2,2,Low
+West Hindmarsh,450.0,630.0,550.0,10.0,2,2,Low
+Grand Total,495.0,590.0,550.0,13210.0,2,2,Low
+Devon Park,490.0,620.0,550.0,20.0,2,2,Low
+Plympton,470.0,650.0,550.0,75.0,2,2,Low
+Erindale,550.0,,550.0,,2,2,Low
+Huntfield Heights,460.0,550.0,550.0,15.0,2,2,Low
+Glenelg East,527.5,635.0,550.0,35.0,2,2,Low
+Largs Bay,540.0,592.5,550.0,20.0,2,2,Low
+Oakden,282.91,625.0,550.0,20.0,2,2,Low
+Hackham,360.0,555.0,550.0,15.0,2,2,Low
+Kurralta Park,480.0,650.0,550.0,45.0,2,2,Low
+Pennington,,550.0,550.0,25.0,2,2,Low
+Seaview Downs,,570.0,550.0,15.0,2,2,Low
+Kensington Gardens,550.0,600.0,550.0,25.0,2,2,Low
+Munno Para,385.0,560.0,550.0,100.0,2,2,Low
+Munno Para West,650.0,550.0,550.0,155.0,2,2,Low
+Tea Tree Gully,505.0,635.0,550.0,20.0,2,2,Low
+Eyre,510.0,550.0,550.0,25.0,2,2,Low
+Taperoo,203.2,550.0,550.0,25.0,2,2,Low
+Nailsworth,462.5,630.0,550.0,15.0,2,2,Low
+Macclesfield,545.0,,545.0,,1,1,Very Low
+Hillier,,545.0,545.0,,1,1,Very Low
+Collinswood,540.0,550.0,545.0,10.0,1,1,Very Low
+Leabrook,540.0,,540.0,10.0,1,1,Very Low
+Sefton Park,460.0,600.0,540.0,5.0,1,1,Very Low
+Evanston Gardens,560.0,540.0,540.0,50.0,1,1,Very Low
+Hope Valley,470.0,597.5,540.0,25.0,1,1,Very Low
+Thebarton,430.0,575.0,537.5,15.0,1,1,Very Low
+West Croydon,475.0,550.0,535.0,30.0,1,1,Very Low
+Daw Park,510.0,760.0,535.0,15.0,1,1,Very Low
+Underdale,507.5,647.5,535.0,20.0,1,1,Very Low
+Cudlee Creek,,530.0,530.0,,1,1,Very Low
+Joslin,440.0,925.0,530.0,,1,1,Very Low
+Kapunda,164.9,550.0,530.0,10.0,1,1,Very Low
+Ottoway,455.0,600.0,530.0,15.0,1,1,Very Low
+Para Hills West,440.0,630.0,530.0,25.0,1,1,Very Low
+Peterhead,432.5,550.0,530.0,5.0,1,1,Very Low
+Globe Derby Park,,530.0,530.0,,1,1,Very Low
+Salisbury North,445.0,535.0,527.5,80.0,1,1,Very Low
+Hackham West,400.0,545.0,527.5,30.0,1,1,Very Low
+Marleston,490.0,725.0,525.0,25.0,1,1,Very Low
+Strathalbyn,450.0,530.0,525.0,30.0,1,1,Very Low
+Mount Benson,,525.0,525.0,,1,1,Very Low
+Keswick,470.0,630.0,525.0,10.0,1,1,Very Low
+Payneham,490.0,595.0,525.0,35.0,1,1,Very Low
+Woodville North,517.5,525.0,522.5,30.0,1,1,Very Low
+O Sullivan Beach,450.0,545.0,522.5,15.0,1,1,Very Low
+Angle Park,,520.7,520.7,,1,1,Very Low
+Smithfield Plains,237.9,520.0,520.0,55.0,1,1,Very Low
+Middleton,462.5,520.0,520.0,10.0,1,1,Very Low
+Murray Bridge East,,520.0,520.0,,1,1,Very Low
+Alberton,440.0,520.0,520.0,10.0,1,1,Very Low
+Goolwa North,,520.0,520.0,10.0,1,1,Very Low
+Hindmarsh,767.5,545.0,520.0,5.0,1,1,Very Low
+Millswood,520.0,600.0,520.0,10.0,1,1,Very Low
+Smithfield,171.155,540.0,520.0,40.0,1,1,Very Low
+Coromandel Valley,520.0,585.0,520.0,,1,1,Very Low
+Hawthorndene,365.0,650.0,515.0,,1,1,Very Low
+Adelaide,539.0,650.0,514.5,1050.0,1,1,Very Low
+Semaphore,450.0,625.0,510.0,25.0,1,1,Very Low
+Kalbeeba,,510.0,510.0,,1,1,Very Low
+Yahl,,510.0,510.0,,1,1,Very Low
+Goolwa South,435.0,520.0,510.0,10.0,1,1,Very Low
+Mount Barker Springs,,510.0,510.0,,1,1,Very Low
+Black Forest,475.0,670.0,510.0,15.0,1,1,Very Low
+St Peters,500.0,727.5,510.0,25.0,1,1,Very Low
+Rosewater,430.0,547.5,505.0,20.0,1,1,Very Low
+Elizabeth Park,283.89,510.0,505.0,50.0,1,1,Very Low
+West Beach,480.0,695.0,502.5,30.0,1,1,Very Low
+Birdwood,392.5,975.0,502.5,,1,1,Very Low
+Ovingham,447.5,540.0,500.0,10.0,1,1,Very Low
+Penneshaw,,500.0,500.0,,1,1,Very Low
+Broadview,475.0,615.0,500.0,35.0,1,1,Very Low
+Birkenhead,540.0,487.5,500.0,10.0,1,1,Very Low
+Marryatville,,500.0,500.0,5.0,1,1,Very Low
+Port Vincent,,500.0,500.0,,1,1,Very Low
+Lewiston,,500.0,500.0,,1,1,Very Low
+Northern Heights,,500.0,500.0,,1,1,Very Low
+Goolwa Beach,,500.0,500.0,15.0,1,1,Very Low
+Goodwood,497.5,655.0,500.0,30.0,1,1,Very Low
+Port Hughes,,500.0,500.0,,1,1,Very Low
+Queenstown,415.0,650.0,500.0,15.0,1,1,Very Low
+Watervale,,500.0,500.0,,1,1,Very Low
+Willunga,465.0,525.0,500.0,5.0,1,1,Very Low
+Elizabeth Vale,435.0,500.0,500.0,50.0,1,1,Very Low
+Salisbury,430.0,550.0,500.0,100.0,1,1,Very Low
+Evanston,280.0,520.0,500.0,45.0,1,1,Very Low
+St Marys,450.0,650.0,500.0,30.0,1,1,Very Low
+Kilburn,480.0,530.0,500.0,50.0,1,1,Very Low
+Clarence Park,490.0,672.5,500.0,25.0,1,1,Very Low
+Tooperang,,500.0,500.0,,1,1,Very Low
+Port Elliot,330.2,512.5,497.5,15.0,1,1,Very Low
+Christie Downs,332.75,525.0,495.0,40.0,1,1,Very Low
+Kyeema,,495.0,495.0,,1,1,Very Low
+Gawler West,492.5,535.0,492.5,,1,1,Very Low
+Boston,,490.0,490.0,,1,1,Very Low
+Elizabeth East,,500.0,490.0,55.0,1,1,Very Low
+Croydon Park,490.0,580.0,490.0,50.0,1,1,Very Low
+Hendon,400.0,640.0,490.0,5.0,1,1,Very Low
+Hahndorf,490.0,575.0,490.0,,1,1,Very Low
+Woodville Park,360.0,575.0,490.0,10.0,1,1,Very Low
+Elizabeth Downs,480.0,500.0,490.0,85.0,1,1,Very Low
+Woodville Gardens,364.45,497.5,483.7,20.0,1,1,Very Low
+Finniss,,480.0,480.0,,1,1,Very Low
+Brooklyn Park,460.0,615.0,480.0,50.0,1,1,Very Low
+Elizabeth Grove,300.0,490.0,480.0,35.0,1,1,Very Low
+Biggs Flat,,480.0,480.0,,1,1,Very Low
+Victor Harbor,450.0,490.0,480.0,25.0,1,1,Very Low
+Dulwich,445.0,925.0,475.0,15.0,1,1,Very Low
+Elizabeth,395.0,550.0,475.0,10.0,1,1,Very Low
+Penwortham,,475.0,475.0,,1,1,Very Low
+Stansbury,,475.0,475.0,,1,1,Very Low
+Rowland Flat,,650.0,475.0,,1,1,Very Low
+Davoren Park,230.8,475.0,470.0,110.0,1,1,Very Low
+Parham,,470.0,470.0,,1,1,Very Low
+Chiton,,470.0,470.0,,1,1,Very Low
+New Town,,460.0,460.0,,1,1,Very Low
+Paris Creek,,460.0,460.0,,1,1,Very Low
+Semaphore South,455.0,570.0,460.0,10.0,1,1,Very Low
+Myponga,,453.75,453.75,,1,1,Very Low
+Wanilla,,450.0,450.0,,1,1,Very Low
+Milang,,450.0,450.0,,1,1,Very Low
+Pekina,,450.0,450.0,,1,1,Very Low
+Scott Creek,,450.0,450.0,,1,1,Very Low
+Clare,355.0,450.0,450.0,20.0,1,1,Very Low
+Clayton Bay,,450.0,450.0,,1,1,Very Low
+Penrice,,450.0,450.0,,1,1,Very Low
+Elizabeth North,450.0,450.0,450.0,60.0,1,1,Very Low
+Thevenard,,450.0,450.0,,1,1,Very Low
+Murray Bridge,310.0,460.0,450.0,230.0,1,1,Very Low
+Montacute,450.0,,450.0,,1,1,Very Low
+Cummins,,450.0,450.0,,1,1,Very Low
+Truro,,450.0,450.0,,1,1,Very Low
+Lenswood,,450.0,450.0,,1,1,Very Low
+Port Lincoln,400.0,480.0,450.0,125.0,1,1,Very Low
+Beverley,425.0,640.0,450.0,15.0,1,1,Very Low
+Renmark West,,450.0,450.0,,1,1,Very Low
+Gawler,440.0,490.0,450.0,5.0,1,1,Very Low
+Elizabeth South,226.175,470.0,450.0,30.0,1,1,Very Low
+Rapid Bay,,450.0,450.0,,1,1,Very Low
+Reeves Plains,,450.0,450.0,,1,1,Very Low
+Exeter,355.0,620.0,445.0,,1,1,Very Low
+Cape Douglas,,445.0,445.0,,1,1,Very Low
+Wool Bay,,445.0,445.0,,1,1,Very Low
+Moonta,,440.0,440.0,,1,1,Very Low
+American River,,440.0,440.0,,1,1,Very Low
+Cowandilla,395.0,650.0,440.0,15.0,1,1,Very Low
+Baudin Beach,355.0,450.0,440.0,,1,1,Very Low
+North Beach,,440.0,440.0,,1,1,Very Low
+Everard Park,425.0,990.0,437.5,10.0,1,1,Very Low
+Saddleworth,250.0,500.0,437.5,5.0,1,1,Very Low
+Thompson Beach,,435.0,435.0,,1,1,Very Low
+Wallaroo,280.0,440.0,432.5,25.0,1,1,Very Low
+Mount Gambier,300.0,460.0,430.0,270.0,1,1,Very Low
+Country Total,300.0,450.0,430.0,2515.0,1,1,Very Low
+Moorook South,,430.0,430.0,,1,1,Very Low
+Whyalla Jenkins,,427.5,427.5,20.0,1,1,Very Low
+Carrickalinga,350.0,500.0,425.0,,1,1,Very Low
+Light Pass,,425.0,425.0,,1,1,Very Low
+Bordertown,191.2,427.5,425.0,15.0,1,1,Very Low
+Commissariat Point,,425.0,425.0,,1,1,Very Low
+Rosetown,,425.0,425.0,,1,1,Very Low
+Angaston,360.0,437.5,425.0,10.0,1,1,Very Low
+Point Turton,,422.5,422.5,,1,1,Very Low
+Cross Roads,,420.0,420.0,,1,1,Very Low
+Kadina,,420.0,420.0,15.0,1,1,Very Low
+Auburn,,415.0,415.0,,1,1,Very Low
+West Richmond,415.0,475.0,415.0,5.0,1,1,Very Low
+Penfield,,415.0,415.0,,1,1,Very Low
+Edithburgh,,412.5,412.5,,1,1,Very Low
+Ardrossan,410.0,400.0,405.0,10.0,1,1,Very Low
+Willow Creek,,405.0,405.0,,1,1,Very Low
+Port Macdonnell,,400.0,400.0,,1,1,Very Low
+Port Pirie South,275.0,410.0,400.0,15.0,1,1,Very Low
+Riverton,,400.0,400.0,,1,1,Very Low
+Sandergrove,,400.0,400.0,,1,1,Very Low
+Sevenhill,,400.0,400.0,,1,1,Very Low
+Tailem Bend,247.0,400.0,400.0,5.0,1,1,Very Low
+Bute,,400.0,400.0,,1,1,Very Low
+Ceduna,,400.0,400.0,,1,1,Very Low
+Cambrai,,400.0,400.0,,1,1,Very Low
+Burra,,400.0,400.0,,1,1,Very Low
+Kuitpo,,400.0,400.0,,1,1,Very Low
+Mallala,,400.0,400.0,,1,1,Very Low
+Blanche Harbor,,400.0,400.0,,1,1,Very Low
+Coobowie,,400.0,400.0,,1,1,Very Low
+Balaklava,,400.0,400.0,10.0,1,1,Very Low
+Bolivar,,,400.0,,1,1,Very Low
+Cobdogla,,400.0,400.0,,1,1,Very Low
+Goolwa,335.0,490.0,397.5,15.0,1,1,Very Low
+Minlaton,182.0,400.0,397.5,5.0,1,1,Very Low
+Loxton,310.0,430.0,395.0,20.0,1,1,Very Low
+Stirling North,,390.0,390.0,5.0,1,1,Very Low
+Evanston South,,600.0,385.0,5.0,1,1,Very Low
+Renmark,290.0,410.0,382.5,55.0,1,1,Very Low
+Risdon Park,320.0,392.5,382.5,20.0,1,1,Very Low
+Fisherman Bay,,380.0,380.0,,1,1,Very Low
+Kingscote,260.0,400.0,380.0,15.0,1,1,Very Low
+Port Augusta West,332.5,380.0,380.0,25.0,1,1,Very Low
+Monarto,,380.0,380.0,,1,1,Very Low
+James Well,,380.0,380.0,,1,1,Very Low
+Loxton North,,380.0,380.0,5.0,1,1,Very Low
+Callington,,380.0,380.0,,1,1,Very Low
+Blackfellows Caves,,380.0,380.0,,1,1,Very Low
+Warooka,,380.0,380.0,,1,1,Very Low
+Ballast Head,,380.0,380.0,,1,1,Very Low
+Yorketown,,380.0,380.0,,1,1,Very Low
+Moonta Bay,200.7,400.0,380.0,10.0,1,1,Very Low
+Roxby Downs,310.0,400.0,377.5,60.0,1,1,Very Low
+Wellington East,,375.0,375.0,,1,1,Very Low
+Nepean Bay,,375.0,375.0,,1,1,Very Low
+Naracoorte,325.0,390.0,370.0,40.0,1,1,Very Low
+Solomontown,,370.0,370.0,15.0,1,1,Very Low
+Meningie,315.0,400.0,370.0,,1,1,Very Low
+Peterborough,,367.5,367.5,5.0,1,1,Very Low
+Tumby Bay,300.0,500.0,365.0,10.0,1,1,Very Low
+Port Wakefield,365.0,485.0,365.0,,1,1,Very Low
+Monash,300.0,430.0,365.0,,1,1,Very Low
+Maitland,,362.5,362.5,5.0,1,1,Very Low
+Lucindale,,360.0,360.0,,1,1,Very Low
+Henley Beach South,242.65,1000.0,357.25,40.0,1,1,Very Low
+Risdon Park South,,355.0,355.0,5.0,1,1,Very Low
+Mylor,350.0,,350.0,,1,1,Very Low
+Berri,250.0,380.0,350.0,35.0,1,1,Very Low
+Kybunga,,350.0,350.0,,1,1,Very Low
+Tulka,,350.0,350.0,,1,1,Very Low
+German Creek,,350.0,350.0,,1,1,Very Low
+Napperby,,350.0,350.0,,1,1,Very Low
+Paringa,330.0,460.0,350.0,5.0,1,1,Very Low
+Mccracken,300.0,630.0,350.0,5.0,1,1,Very Low
+Kingston SE,350.0,325.0,350.0,,1,1,Very Low
+Lameroo,250.0,350.0,350.0,,1,1,Very Low
+Medindie,600.0,1125.0,350.0,15.0,1,1,Very Low
+Gladstone,,350.0,350.0,,1,1,Very Low
+Arno Bay,,350.0,350.0,,1,1,Very Low
+Wilmington,,350.0,350.0,,1,1,Very Low
+Riverglades,,350.0,350.0,,1,1,Very Low
+Hatherleigh,,350.0,350.0,,1,1,Very Low
+Allendale East,,345.0,345.0,,1,1,Very Low
+Mannum,270.0,420.0,340.0,10.0,1,1,Very Low
+Waikerie,250.0,350.0,340.0,10.0,1,1,Very Low
+Penola,,340.0,340.0,,1,1,Very Low
+Wonuarra,,340.0,340.0,,1,1,Very Low
+Cooltong,,340.0,340.0,,1,1,Very Low
+Port Pirie West,240.0,350.0,337.5,20.0,1,1,Very Low
+Owen,,335.0,335.0,,1,1,Very Low
+Thorngate,,335.0,335.0,,1,1,Very Low
+Redhill,,330.0,330.0,,1,1,Very Low
+Lochiel,,330.0,330.0,,1,1,Very Low
+Barmera,320.0,360.0,330.0,15.0,1,1,Very Low
+Millicent,320.0,350.0,330.0,25.0,1,1,Very Low
+Port Augusta,295.0,355.0,330.0,105.0,1,1,Very Low
+Pinnaroo,250.0,400.0,325.0,,1,1,Very Low
+Towitta,,320.0,320.0,,1,1,Very Low
+Fitzroy,,320.0,320.0,,1,1,Very Low
+Bedford Park,480.0,270.0,320.0,35.0,1,1,Very Low
+Blanchetown,,315.0,315.0,,1,1,Very Low
+Eudunda,270.0,350.0,310.0,,1,1,Very Low
+Whyalla,250.0,360.0,310.0,35.0,1,1,Very Low
+Streaky Bay,,310.0,310.0,,1,1,Very Low
+Hilltown,,310.0,310.0,,1,1,Very Low
+Whyalla Norrie,275.0,307.5,305.0,55.0,1,1,Very Low
+Quorn,,300.0,300.0,,1,1,Very Low
+Whyalla Playford,250.0,375.0,300.0,25.0,1,1,Very Low
+Port Mannum,,300.0,300.0,,1,1,Very Low
+Wirrina Cove,300.0,520.0,300.0,,1,1,Very Low
+Hindmarsh Valley,,,300.0,,1,1,Very Low
+Wudinna,,300.0,300.0,,1,1,Very Low
+Tintinara,,300.0,300.0,,1,1,Very Low
+Port Victoria,,300.0,300.0,,1,1,Very Low
+Second Valley,300.0,,300.0,,1,1,Very Low
+Farrell Flat,,300.0,300.0,,1,1,Very Low
+Padthaway,,300.0,300.0,,1,1,Very Low
+Jamestown,,295.0,295.0,,1,1,Very Low
+Glossop,,290.0,290.0,,1,1,Very Low
+Tarpeena,287.5,350.0,287.5,,1,1,Very Low
+Reedy Creek,,280.0,280.0,,1,1,Very Low
+Bugle Hut,,280.0,280.0,,1,1,Very Low
+Whyalla Stuart,240.0,280.0,280.0,60.0,1,1,Very Low
+Leigh Creek,,280.0,280.0,,1,1,Very Low
+Salisbury Heights,,625.0,280.0,15.0,1,1,Very Low
+Point Pass,280.0,,280.0,,1,1,Very Low
+Gawler Belt,,687.5,275.0,,1,1,Very Low
+Karoonda,,270.0,270.0,,1,1,Very Low
+Mount Burr,,270.0,270.0,,1,1,Very Low
+Keith,210.0,310.0,270.0,,1,1,Very Low
+Willalooka,,270.0,270.0,,1,1,Very Low
+Middle Beach,,,260.0,11.0,1,1,Very Low
+Cleve,220.0,305.0,260.0,,1,1,Very Low
+Coonalpyn,,260.0,260.0,,1,1,Very Low
+Bellevue Heights,385.0,250.0,250.0,5.0,1,1,Very Low
+Coober Pedy,244.5,250.0,250.0,15.0,1,1,Very Low
+Wattle Flat,250.0,,250.0,,1,1,Very Low
+Coonawarra,,250.0,250.0,,1,1,Very Low
+Booleroo Centre,146.0,350.0,248.0,,1,1,Very Low
+Robe,240.0,450.0,240.0,5.0,1,1,Very Low
+Darlington,550.0,575.0,240.0,15.0,1,1,Very Low
+Lock,240.0,230.0,230.0,,1,1,Very Low
+Brownlow Via Kingscote,230.0,,230.0,,1,1,Very Low
+Qualco,,230.0,230.0,,1,1,Very Low
+Port Pirie,,415.0,227.5,30.0,1,1,Very Low
+Verdun,,,227.5,,1,1,Very Low
+Springfield,,,220.0,,1,1,Very Low
+Yankalilla,214.1,,214.1,,1,1,Very Low
+Andamooka,,200.0,200.0,,1,1,Very Low
+Westall,200.0,,200.0,,1,1,Very Low
+Port Neill,,200.0,200.0,,1,1,Very Low
+Cowell,200.0,200.0,200.0,,1,1,Very Low
+Hawker,180.0,,180.0,,1,1,Very Low
+Stockport,,,170.0,,1,1,Very Low
+Mount Bryan,,150.0,150.0,,1,1,Very Low
+Kimba,85.0,,85.0,,1,1,Very Low
