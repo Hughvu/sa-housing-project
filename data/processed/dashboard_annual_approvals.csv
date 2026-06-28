@@ -1,7 +1,7 @@
-Year,Dwelling_Approvals
-2021,14815
-2022,12747
-2023,11613
-2024,12551
-2025,14997
-2026,4800
+Year,Dwelling_Approvals,Months_Covered,Period_Status,Year_Label
+2021,14815,12,Full calendar year,2021
+2022,12747,12,Full calendar year,2022
+2023,11613,12,Full calendar year,2023
+2024,12551,12,Full calendar year,2024
+2025,14997,12,Full calendar year,2025
+2026,4800,4,Year to date,2026 YTD (4 months)

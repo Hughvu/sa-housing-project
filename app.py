@@ -1,322 +1,479 @@
-import streamlit as st
+"""Streamlit application for the SA Housing Pressure & Supply Dashboard."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
+import streamlit as st
+
+
+ROOT = Path(__file__).resolve().parent
+DATA = ROOT / "data" / "processed"
+
+CATEGORY_ORDER = ["Very High", "High", "Moderate", "Low", "Very Low", "Not scored"]
+CATEGORY_COLOURS = {
+    "Very High": "#991B1B",
+    "High": "#DC2626",
+    "Moderate": "#F59E0B",
+    "Low": "#2563EB",
+    "Very Low": "#0F766E",
+    "Not scored": "#64748B",
+}
+
+REQUIRED_LGA_COLUMNS = {
+    "LGA_Name",
+    "Total_Median",
+    "Total_Count",
+    "Sample_Quality",
+    "Rent_to_Income_Proxy_Pct",
+    "Population_2025",
+    "Population_Growth_Pct",
+    "Approvals_2024_25",
+    "Approvals_per_1000",
+    "Housing_Pressure_Index",
+    "Housing_Pressure_Category",
+    "Eligible_for_Score",
+}
+
 
 st.set_page_config(
-    page_title="SA Housing Dashboard",
+    page_title="SA Housing Pressure & Supply",
     page_icon="🏘️",
-    layout="wide"
+    layout="wide",
 )
 
-st.title("SA Housing Supply & Infrastructure Readiness Dashboard")
+st.markdown(
+    """
+    <style>
+      .block-container {padding-top: 2rem; padding-bottom: 3rem;}
+      [data-testid="stMetric"] {
+        border: 1px solid #dbe3ec; border-radius: 0.65rem;
+        padding: 0.8rem 1rem; background: #f8fafc;
+      }
+      .source-note {font-size: 0.86rem; color: #475569;}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
-st.markdown("""
-This dashboard is a Business Analyst portfolio project that explores housing pressure
-and housing supply indicators in South Australia using public datasets.
-""")
 
-# Load data
-rent = pd.read_csv("data/processed/dashboard_housing_pressure_score.csv")
-monthly_approvals = pd.read_csv("data/processed/dashboard_monthly_approvals.csv")
-annual_approvals = pd.read_csv("data/processed/dashboard_annual_approvals.csv")
+@st.cache_data(show_spinner=False)
+def load_data() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    lga = pd.read_csv(DATA / "dashboard_lga_pressure.csv")
+    monthly = pd.read_csv(DATA / "dashboard_monthly_approvals.csv")
+    annual = pd.read_csv(DATA / "dashboard_annual_approvals.csv")
+    ytd = pd.read_csv(DATA / "dashboard_ytd_approvals.csv")
+    missing = REQUIRED_LGA_COLUMNS.difference(lga.columns)
+    if missing:
+        raise ValueError(f"LGA dataset is missing columns: {sorted(missing)}")
+    monthly["Month"] = pd.to_datetime(monthly["Month"])
+    for column in ["Eligible_for_Score", "Complete_Score"]:
+        if column in lga:
+            lga[column] = lga[column].astype(str).str.lower().eq("true")
+    return lga, monthly.sort_values("Month"), annual, ytd
 
-monthly_approvals["Month"] = pd.to_datetime(monthly_approvals["Month"])
 
-# Sidebar filters
+try:
+    lga, monthly, annual, ytd = load_data()
+except (FileNotFoundError, ValueError) as error:
+    st.error(f"Dashboard data could not be loaded: {error}")
+    st.code("python -m src.pipeline")
+    st.stop()
+
+
+st.title("South Australian Housing Pressure & Supply Dashboard")
+st.caption(
+    "A relative LGA decision-support view combining rental affordability proxy, "
+    "population growth and dwelling approvals. Data current to April 2026."
+)
+
 st.sidebar.header("Filters")
+selected_categories = st.sidebar.multiselect(
+    "Relative pressure category",
+    options=CATEGORY_ORDER,
+    default=CATEGORY_ORDER[:-1],
+)
+selected_quality = st.sidebar.multiselect(
+    "Rental sample quality",
+    options=sorted(lga["Sample_Quality"].dropna().unique()),
+    default=sorted(lga["Sample_Quality"].dropna().unique()),
+)
+search_text = st.sidebar.text_input("Find an LGA", placeholder="e.g. Playford")
+include_unscored = st.sidebar.checkbox("Include areas not eligible for scoring", value=False)
 
-selected_category = st.sidebar.multiselect(
-    "Housing pressure category",
-    options=sorted(rent["Housing_Pressure_Category"].unique()),
-    default=sorted(rent["Housing_Pressure_Category"].unique())
+filtered = lga[
+    lga["Housing_Pressure_Category"].isin(selected_categories)
+    & lga["Sample_Quality"].isin(selected_quality)
+].copy()
+if include_unscored:
+    quality_match = lga["Sample_Quality"].isin(selected_quality) | lga["Sample_Quality"].isna()
+    filtered = lga[
+        (lga["Housing_Pressure_Category"].isin(selected_categories) | ~lga["Complete_Score"])
+        & quality_match
+    ].copy()
+if search_text:
+    filtered = filtered[
+        filtered["LGA_Name"].str.contains(search_text, case=False, na=False)
+    ]
+
+st.sidebar.divider()
+st.sidebar.caption(
+    "Only LGAs with at least 10 published quarterly rental bonds and complete "
+    "inputs receive a pressure score."
 )
 
-filtered_rent = rent[rent["Housing_Pressure_Category"].isin(selected_category)]
+tabs = st.tabs(
+    [
+        "Executive summary",
+        "LGA pressure",
+        "Rental affordability",
+        "Supply & demand",
+        "State pipeline",
+        "Methodology & quality",
+    ]
+)
 
-tabs = st.tabs([
-    "Executive Summary",
-    "Rental Pressure",
-    "Housing Pressure Score",
-    "Housing Supply",
-    "BA Interpretation",
-    "Data Tables"
-])
 
-# -----------------------------
-# Executive Summary
-# -----------------------------
 with tabs[0]:
-    st.header("Executive Summary")
-
+    scored = lga[lga["Complete_Score"]]
+    latest = monthly.iloc[-1]
     col1, col2, col3, col4 = st.columns(4)
-
-    col1.metric("Suburbs analysed", len(filtered_rent))
-    col2.metric("Highest median rent", f"${filtered_rent['Total_Median'].max():,.0f}")
-    col3.metric("Average median rent", f"${filtered_rent['Total_Median'].mean():,.0f}")
-    col4.metric("Latest monthly approvals", f"{monthly_approvals['Dwelling_Approvals'].iloc[-1]:,.0f}")
-
-    st.subheader("Project purpose")
-
-    st.info("""
-    This dashboard supports early identification of housing pressure by combining
-    rental market indicators and dwelling approval trends. The current version uses
-    suburb-level rental data and state-level building approval data.
-    """)
-
-    st.subheader("Top 10 suburbs by median rent")
-
-    top_rent = filtered_rent.sort_values("Total_Median", ascending=False).head(10)
-
-    fig = px.bar(
-        top_rent,
-        x="Total_Median",
-        y="Suburb",
-        orientation="h",
-        title="Top 10 suburbs by total median rent",
-        labels={
-            "Total_Median": "Median rent ($)",
-            "Suburb": "Suburb"
-        },
-        hover_data=["Housing_Pressure_Score", "Housing_Pressure_Category"]
+    col1.metric("LGAs scored", f"{len(scored)} of {len(lga)}")
+    col2.metric(
+        "Median rent-to-income proxy",
+        f"{scored['Rent_to_Income_Proxy_Pct'].median():.1f}%",
+        help="Quarterly median weekly rent divided by 2021 Census median weekly household income.",
+    )
+    col3.metric(
+        "Median approvals per 1,000",
+        f"{scored['Approvals_per_1000'].median():.1f}",
+        help="2024–25 dwelling approvals divided by June 2025 population.",
+    )
+    col4.metric(
+        f"State approvals — {latest['Month'].strftime('%b %Y')}",
+        f"{latest['Dwelling_Approvals']:,.0f}",
+        help="ABS original series; approvals are permits, not completed homes.",
     )
 
-    fig.update_layout(yaxis={"categoryorder": "total ascending"})
+    st.info(
+        "This version compares demand and supply at one geography: Local Government "
+        "Area. The index is a relative prioritisation tool, not a forecast and not "
+        "a direct measure of household financial stress."
+    )
 
-    st.plotly_chart(fig, use_container_width=True)
+    chart_data = scored.nlargest(15, "Housing_Pressure_Index").sort_values(
+        "Housing_Pressure_Index"
+    )
+    fig = px.bar(
+        chart_data,
+        x="Housing_Pressure_Index",
+        y="LGA_Name",
+        color="Housing_Pressure_Category",
+        color_discrete_map=CATEGORY_COLOURS,
+        category_orders={"Housing_Pressure_Category": CATEGORY_ORDER},
+        orientation="h",
+        title="Highest relative housing pressure index",
+        labels={
+            "Housing_Pressure_Index": "Relative pressure index (0–100)",
+            "LGA_Name": "LGA",
+        },
+        hover_data={
+            "Rent_to_Income_Proxy_Pct": ":.1f",
+            "Population_Growth_Pct": ":.1f",
+            "Approvals_per_1000": ":.2f",
+            "Sample_Quality": True,
+        },
+    )
+    fig.update_layout(showlegend=False, height=530)
+    st.plotly_chart(fig, width="stretch")
+
+    st.subheader("How to read the result")
+    c1, c2, c3 = st.columns(3)
+    c1.markdown(
+        "**Affordability pressure — 50%**  \nHigher current rent relative to the "
+        "LGA's 2021 Census household income increases pressure."
+    )
+    c2.markdown(
+        "**Demand pressure — 25%**  \nHigher 2024–25 population growth increases pressure."
+    )
+    c3.markdown(
+        "**Supply gap — 25%**  \nFewer 2024–25 approvals per 1,000 residents increases pressure."
+    )
 
 
-# -----------------------------
-# Rental Pressure
-# -----------------------------
 with tabs[1]:
-    st.header("Rental Pressure")
+    st.header("LGA pressure comparison")
+    if filtered.empty:
+        st.warning("No LGAs match the selected filters.")
+    else:
+        plot_data = filtered[filtered["Complete_Score"]].copy()
+        fig = px.scatter(
+            plot_data,
+            x="Approvals_per_1000",
+            y="Rent_to_Income_Proxy_Pct",
+            size="Population_2025",
+            color="Housing_Pressure_Category",
+            color_discrete_map=CATEGORY_COLOURS,
+            category_orders={"Housing_Pressure_Category": CATEGORY_ORDER},
+            hover_name="LGA_Name",
+            hover_data={
+                "Housing_Pressure_Index": ":.1f",
+                "Population_Growth_Pct": ":.1f",
+                "Total_Median": ":$,.0f",
+                "Total_Count": ":,.0f",
+                "Sample_Quality": True,
+                "Population_2025": ":,.0f",
+            },
+            title="Rental-cost proxy versus dwelling approvals",
+            labels={
+                "Approvals_per_1000": "2024–25 dwelling approvals per 1,000 residents",
+                "Rent_to_Income_Proxy_Pct": "Rent-to-income proxy (%)",
+            },
+        )
+        fig.add_hline(
+            y=30,
+            line_dash="dot",
+            line_color="#475569",
+            annotation_text="30% reference only",
+        )
+        fig.update_layout(height=600)
+        st.plotly_chart(fig, width="stretch")
+        st.caption(
+            "Bubble size represents June 2025 population. The 30% line is contextual: "
+            "the income denominator is the 2021 Census median and is not a current "
+            "household-level rental-stress measure."
+        )
 
-    st.markdown("""
-    Rental pressure is measured using total median rent from the December 2025
-    Private Rent Report.
-    """)
-
-    top_20_rent = filtered_rent.sort_values("Total_Median", ascending=False).head(20)
-
-    fig = px.bar(
-        top_20_rent,
-        x="Total_Median",
-        y="Suburb",
-        color="Housing_Pressure_Category",
-        orientation="h",
-        title="Top 20 suburbs by total median rent",
-        labels={
-            "Total_Median": "Median rent ($)",
-            "Suburb": "Suburb",
-            "Housing_Pressure_Category": "Housing pressure"
-        },
-        hover_data=["Housing_Pressure_Score"]
-    )
-
-    fig.update_layout(yaxis={"categoryorder": "total ascending"})
-
-    st.plotly_chart(fig, use_container_width=True)
-
-    st.subheader("Housing pressure category count")
-
-    category_count = (
-        filtered_rent
-        .groupby("Housing_Pressure_Category", as_index=False)
-        .size()
-        .rename(columns={"size": "Suburb_Count"})
-    )
-
-    fig2 = px.bar(
-        category_count,
-        x="Housing_Pressure_Category",
-        y="Suburb_Count",
-        title="Number of suburbs by housing pressure category",
-        labels={
-            "Housing_Pressure_Category": "Housing pressure category",
-            "Suburb_Count": "Number of suburbs"
-        }
-    )
-
-    st.plotly_chart(fig2, use_container_width=True)
-
-
-# -----------------------------
-# Housing Pressure Score
-# -----------------------------
-with tabs[2]:
-    st.header("Housing Pressure Score")
-
-    st.markdown("""
-    The Housing Pressure Score is a prototype scoring model that ranks suburbs
-    based on total median rent. A higher score indicates stronger rental pressure.
-
-    In this version, the score is based on rent only. Future versions should include
-    population growth and LGA-level building approvals to create a more complete
-    demand-versus-supply score.
-    """)
-
-    st.subheader("Top 20 suburbs by median rent and pressure category")
-
-    top_score = filtered_rent.sort_values(
-        "Total_Median",
-        ascending=False
-    ).head(20)
-
-    fig_score = px.bar(
-        top_score,
-        x="Total_Median",
-        y="Suburb",
-        color="Housing_Pressure_Category",
-        orientation="h",
-        title="Top 20 suburbs by median rent and Housing Pressure Category",
-        labels={
-            "Total_Median": "Median rent ($)",
-            "Suburb": "Suburb",
-            "Housing_Pressure_Category": "Housing pressure category"
-        },
-        hover_data=["Housing_Pressure_Score", "House_Total_Median", "Unit_Total_Median", "Total_Count"]
-    )
-
-    fig_score.update_layout(yaxis={"categoryorder": "total ascending"})
-
-    st.plotly_chart(fig_score, use_container_width=True)
-
-    st.subheader("Housing pressure score distribution")
-
-    score_count = (
-        filtered_rent
-        .groupby(["Housing_Pressure_Score", "Housing_Pressure_Category"], as_index=False)
-        .size()
-        .rename(columns={"size": "Suburb_Count"})
-        .sort_values("Housing_Pressure_Score", ascending=False)
-    )
-
-    fig_score_count = px.bar(
-        score_count,
-        x="Housing_Pressure_Category",
-        y="Suburb_Count",
-        color="Housing_Pressure_Category",
-        title="Number of suburbs by Housing Pressure Score",
-        labels={
-            "Housing_Pressure_Category": "Housing pressure category",
-            "Suburb_Count": "Number of suburbs"
-        },
-        hover_data=["Housing_Pressure_Score"]
-    )
-
-    st.plotly_chart(fig_score_count, use_container_width=True)
-
-    st.subheader("Scoring logic")
-
-    scoring_table = pd.DataFrame({
-        "Score": [5, 4, 3, 2, 1],
-        "Category": ["Very High", "High", "Medium", "Low", "Very Low"],
-        "Total median rent range": [
-            "$850 and above",
-            "$750 to $849",
-            "$650 to $749",
-            "$550 to $649",
-            "Below $550"
-        ],
-        "Interpretation": [
-            "Very high rental pressure",
-            "High rental pressure",
-            "Moderate rental pressure",
-            "Low rental pressure",
-            "Very low rental pressure"
+        display_columns = [
+            "LGA_Name",
+            "Housing_Pressure_Index",
+            "Housing_Pressure_Category",
+            "Rent_to_Income_Proxy_Pct",
+            "Population_Growth_Pct",
+            "Approvals_per_1000",
+            "Total_Count",
+            "Sample_Quality",
         ]
-    })
+        st.dataframe(
+            filtered[display_columns].sort_values(
+                "Housing_Pressure_Index", ascending=False
+            ),
+            width="stretch",
+            hide_index=True,
+            column_config={
+                "LGA_Name": "LGA",
+                "Housing_Pressure_Index": st.column_config.NumberColumn(
+                    "Pressure index", format="%.1f"
+                ),
+                "Rent_to_Income_Proxy_Pct": st.column_config.NumberColumn(
+                    "Rent/income proxy", format="%.1f%%"
+                ),
+                "Population_Growth_Pct": st.column_config.NumberColumn(
+                    "Population growth", format="%.1f%%"
+                ),
+                "Approvals_per_1000": st.column_config.NumberColumn(
+                    "Approvals/1,000", format="%.2f"
+                ),
+            },
+        )
 
-    st.dataframe(scoring_table, use_container_width=True)
+
+with tabs[2]:
+    st.header("Rental affordability proxy")
+    st.warning(
+        "This is a screening proxy, not a current affordability rate. It combines "
+        "December-quarter 2025 rents with 2021 Census median household income."
+    )
+    eligible = filtered[filtered["Complete_Score"]].nlargest(
+        20, "Rent_to_Income_Proxy_Pct"
+    )
+    fig = px.bar(
+        eligible.sort_values("Rent_to_Income_Proxy_Pct"),
+        x="Rent_to_Income_Proxy_Pct",
+        y="LGA_Name",
+        color="Sample_Quality",
+        orientation="h",
+        title="Highest median-rent-to-household-income proxies",
+        labels={
+            "Rent_to_Income_Proxy_Pct": "Rent-to-income proxy (%)",
+            "LGA_Name": "LGA",
+        },
+        hover_data={
+            "Total_Median": ":$,.0f",
+            "Median_Weekly_Household_Income_2021": ":$,.0f",
+            "Total_Count": ":,.0f",
+        },
+    )
+    fig.add_vline(x=30, line_dash="dot", line_color="#475569")
+    fig.update_layout(height=650)
+    st.plotly_chart(fig, width="stretch")
+
+    excluded = lga[~lga["Eligible_for_Score"]][
+        ["LGA_Name", "Total_Median", "Total_Count", "Sample_Quality"]
+    ]
+    with st.expander(f"Areas excluded by the sample rule ({len(excluded)})"):
+        st.dataframe(excluded, width="stretch", hide_index=True)
 
 
-# -----------------------------
-# Housing Supply
-# -----------------------------
 with tabs[3]:
-    st.header("Housing Supply")
-
-    st.markdown("""
-    Housing supply activity is represented by monthly dwelling approvals in South Australia.
-    Building approvals are treated as a supply pipeline indicator, not completed dwellings.
-    """)
-
-    fig3 = px.line(
-        monthly_approvals,
-        x="Month",
-        y=["Dwelling_Approvals", "Rolling_3_Month_Avg"],
-        title="Monthly dwelling approvals and 3-month rolling average",
+    st.header("Local supply and demand")
+    supply_data = filtered[filtered["Complete_Score"]].copy()
+    fig = px.scatter(
+        supply_data,
+        x="Population_Growth_Pct",
+        y="Approvals_per_1000",
+        color="Housing_Pressure_Category",
+        color_discrete_map=CATEGORY_COLOURS,
+        size="Population_2025",
+        hover_name="LGA_Name",
+        hover_data={
+            "Approvals_2024_25": ":,.0f",
+            "Approvals_2025_26_FYTD": ":,.0f",
+            "Population_2025": ":,.0f",
+        },
+        title="Population growth versus approved supply",
         labels={
-            "Month": "Month",
-            "value": "Dwelling approvals",
-            "variable": "Measure"
-        }
+            "Population_Growth_Pct": "Population growth, 2024–25 (%)",
+            "Approvals_per_1000": "2024–25 approvals per 1,000 residents",
+        },
+    )
+    fig.update_layout(height=600)
+    st.plotly_chart(fig, width="stretch")
+    st.caption(
+        "Small-area approvals are volatile and subject to revision. The index uses "
+        "a completed financial year rather than comparing a partial year with a full year."
     )
 
-    st.plotly_chart(fig3, use_container_width=True)
 
-    fig4 = px.bar(
-        annual_approvals,
-        x="Year",
-        y="Dwelling_Approvals",
-        title="Annual dwelling approvals in South Australia",
-        labels={
-            "Year": "Year",
-            "Dwelling_Approvals": "Total dwelling approvals"
-        }
-    )
-
-    st.plotly_chart(fig4, use_container_width=True)
-
-
-# -----------------------------
-# BA Interpretation
-# -----------------------------
 with tabs[4]:
-    st.header("BA Interpretation")
+    st.header("State dwelling approval pipeline")
+    st.caption(
+        "ABS original series. Building approval is a supply-pipeline indicator, "
+        "not evidence that construction started or a dwelling was completed."
+    )
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=monthly["Month"],
+            y=monthly["Dwelling_Approvals"],
+            name="Monthly approvals",
+            mode="lines",
+            line={"color": "#94A3B8", "width": 1.5},
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=monthly["Month"],
+            y=monthly["Rolling_3_Month_Avg"],
+            name="3-month rolling average",
+            mode="lines",
+            line={"color": "#0F766E", "width": 3},
+        )
+    )
+    fig.update_layout(
+        title="South Australian monthly dwelling approvals",
+        xaxis_title="Month",
+        yaxis_title="Dwelling approvals",
+        height=500,
+        hovermode="x unified",
+    )
+    st.plotly_chart(fig, width="stretch")
 
-    st.subheader("Current findings")
-
-    st.markdown("""
-    Based on the current prototype:
-
-    - Rental data can identify suburbs with higher median rent levels.
-    - The Housing Pressure Score provides a simple ranking of suburbs based on rental pressure.
-    - Building approval data provides a statewide view of housing supply activity.
-    - The current version highlights housing pressure but does not yet directly compare
-      rent and approvals by the same local geography.
-    - A future version should add LGA-level or SA2-level building approval data to allow
-      a direct demand-versus-supply comparison by area.
-    """)
-
-    st.subheader("Key limitation")
-
-    st.warning("""
-    The rent dataset is suburb-level, while the current building approvals dataset is
-    state-level. Because the geographic levels are different, this version should not
-    claim that a specific suburb has low supply. It should only show rental pressure
-    by suburb and supply trends for South Australia overall.
-    """)
-
-    st.subheader("Next recommended enhancement")
-
-    st.success("""
-    Add LGA-level building approvals and population data. This would allow the dashboard
-    to calculate a more meaningful Housing Pressure Score by area.
-    """)
+    c1, c2 = st.columns(2)
+    with c1:
+        annual_fig = px.bar(
+            annual,
+            x="Year_Label",
+            y="Dwelling_Approvals",
+            color="Period_Status",
+            color_discrete_map={
+                "Full calendar year": "#2563EB",
+                "Year to date": "#F59E0B",
+            },
+            title="Annual totals with partial period identified",
+            labels={"Year_Label": "Period", "Dwelling_Approvals": "Approvals"},
+            text_auto=",.0f",
+        )
+        st.plotly_chart(annual_fig, width="stretch")
+    with c2:
+        ytd_fig = px.bar(
+            ytd,
+            x="Year",
+            y="YTD_Dwelling_Approvals",
+            title=f"Like-for-like {ytd.iloc[-1]['Comparison_Label']} comparison",
+            labels={"YTD_Dwelling_Approvals": "Approvals"},
+            text_auto=",.0f",
+        )
+        ytd_fig.update_traces(marker_color="#0F766E")
+        st.plotly_chart(ytd_fig, width="stretch")
 
 
-# -----------------------------
-# Data Tables
-# -----------------------------
 with tabs[5]:
-    st.header("Data Tables")
+    st.header("Methodology, limitations and data quality")
+    st.subheader("Index calculation")
+    st.markdown(
+        """
+        Each eligible LGA receives percentile scores from 0 to 100:
 
-    st.subheader("Housing pressure dataset")
-    st.dataframe(filtered_rent, use_container_width=True)
+        1. **Affordability pressure (50%)** — higher rent-to-income proxy.
+        2. **Demand pressure (25%)** — higher annual population growth.
+        3. **Supply gap (25%)** — lower full-year approvals per 1,000 residents.
 
-    st.subheader("Monthly approvals dataset")
-    st.dataframe(monthly_approvals, use_container_width=True)
+        The weighted result is ranked again to create a relative 0–100 index.
+        Categories are relative bands: Very High ≥80, High ≥60, Moderate ≥40,
+        Low ≥20 and Very Low <20. Areas with fewer than 10 published quarterly
+        rental bonds are not scored.
+        """
+    )
 
-    st.subheader("Annual approvals dataset")
-    st.dataframe(annual_approvals, use_container_width=True)
+    st.subheader("Known limitations")
+    st.markdown(
+        """
+        - The rental source covers bonds lodged during one quarter, not all existing
+          tenancies, asking rents or vacancy rates.
+        - Counts of 1–5 are suppressed; published totals are rounded to the nearest five.
+        - The income denominator is from the 2021 Census and has not been income-indexed.
+        - Approvals are permits and may not become commenced or completed dwellings.
+        - Small-area approval data are volatile and revised by the ABS.
+        - Infrastructure capacity is not scored. Water, wastewater, schools, transport
+          and health require capacity data, not merely distance to facilities.
+        """
+    )
+
+    st.subheader("Infrastructure readiness status")
+    st.info(
+        "The title no longer claims infrastructure readiness. A future readiness "
+        "module should remain separate until auditable service-capacity and land-release "
+        "data are available."
+    )
+
+    st.subheader("Authoritative sources")
+    st.markdown(
+        """
+        - [SA Housing Trust Private Rent Report](https://data.sa.gov.au/data/dataset/private-rent-report)
+        - [ABS Building Approvals](https://www.abs.gov.au/statistics/industry/building-and-construction/building-approvals-australia/latest-release)
+        - [ABS Regional Population 2024–25](https://www.abs.gov.au/statistics/people/population/regional-population/latest-release)
+        - [ABS 2021 Census DataPacks](https://www.abs.gov.au/census/find-census-data/datapacks)
+        - [AIHW Housing Affordability](https://www.aihw.gov.au/reports/australias-welfare/housing-affordability)
+        - [PlanSA Land Supply](https://plan.sa.gov.au/state_snapshot/land_supply)
+        """
+    )
+
+    st.subheader("Download auditable data")
+    d1, d2 = st.columns(2)
+    d1.download_button(
+        "Download LGA analytical dataset",
+        lga.to_csv(index=False).encode("utf-8"),
+        file_name="sa_lga_housing_pressure.csv",
+        mime="text/csv",
+    )
+    d2.download_button(
+        "Download state monthly approvals",
+        monthly.to_csv(index=False).encode("utf-8"),
+        file_name="sa_monthly_dwelling_approvals.csv",
+        mime="text/csv",
+    )
+    st.dataframe(lga, width="stretch", hide_index=True)
