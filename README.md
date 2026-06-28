@@ -91,13 +91,22 @@ project_status.md              Chronological implementation log
 
 ## Quality checks
 
-The pipeline fails when:
+The pipeline validates source contracts before transforming data. It fails
+clearly when:
 
-- LGA codes are duplicated.
-- a state aggregate enters the LGA output;
-- fewer than 50 LGAs have eligible, complete scores;
-- monthly approvals are not chronological; or
-- negative approval values appear.
+- an expected raw file, workbook sheet, ZIP member or required column is
+  missing;
+- a positional workbook extract is narrower than the documented source layout;
+- LGA join keys are duplicated or a required approvals, population or income
+  record is absent;
+- a state aggregate enters the local-area output;
+- fewer than 50 areas have eligible, complete scores;
+- an output is empty, monthly approvals are not chronological, or negative
+  approval values appear.
+
+Rates are calculated only when denominators are positive and finite. Generated
+CSVs are written atomically so an interrupted rebuild does not leave a partial
+output.
 
 Run all checks with:
 
@@ -105,6 +114,18 @@ Run all checks with:
 python -m src.pipeline
 pytest -q
 ```
+
+GitHub Actions repeats the rebuild and tests on Linux with Python 3.10 and
+Python 3.12. A local Streamlit/browser review is still required for material
+interface changes.
+
+## Geography note
+
+The current processed file contains 71 ABS-coded South Australian local areas:
+68 incorporated LGAs plus three Unincorporated SA statistical areas. The
+dashboard uses “LGA” as a compact interface label, but the 71-area count should
+not be interpreted as 71 councils. Of these areas, 53 currently meet the
+published-rental-sample rule and have all model inputs required for a score.
 
 ## Authoritative sources
 

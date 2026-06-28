@@ -19,8 +19,19 @@
 ## Refresh protocol
 
 1. Save new raw files without overwriting prior releases.
-2. Update source constants and period labels in `src/pipeline.py`.
-3. Rebuild with `python -m src.pipeline`.
-4. Run `pytest -q`.
-5. Reconcile state totals and inspect unmatched LGAs.
-6. Update `project_status.md` with source dates, validation results and model changes.
+2. Update the source-path constants, period labels and output field names in
+   `src/pipeline.py` only where the new release requires them.
+3. Check workbook sheet names, header rows, required columns, positional
+   layouts and ZIP-member names against the new source before accepting it.
+4. Rebuild with `python -m src.pipeline`; the pipeline will reject duplicate
+   join keys, missing required LGA coverage and invalid output contracts.
+5. Run `pytest -q`.
+6. Reconcile state and local-area totals, inspect name aliases and investigate
+   every unmatched or newly added area.
+7. Confirm partial periods remain visibly labelled and that the common YTD
+   comparison window updates correctly.
+8. Update this register and `project_status.md` with source filenames, release
+   dates, schema changes, validation results and any model implications.
+
+Generated CSVs under `data/processed/` are rebuildable artifacts and must not be
+hand-edited.

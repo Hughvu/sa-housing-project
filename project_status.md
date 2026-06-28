@@ -39,11 +39,29 @@ validation results, source updates and known limitations.
 
 ### Verification
 
-- Pipeline rebuild: passed.
-- Streamlit automated smoke test: passed with zero application exceptions.
-- Dashboard tabs detected: 6.
+- Baseline pipeline rebuild and Streamlit automated smoke test passed before
+  the current testing, cleanup and dashboard-polish phase.
 - Current output: 71 local areas, 53 eligible and completely scored.
 - Latest state approvals period: April 2026.
+- Current integration verification is pending. Before release, rerun
+  `python -m src.pipeline`, `pytest -q` and browser checks at desktop and narrow
+  widths, then record the exact results here.
+
+### 2026-06-28 — Finalisation work in progress
+
+- Expanded source-contract validation for missing files, worksheets, ZIP
+  members, columns, duplicate join keys and incomplete key coverage.
+- Added safe denominator handling and atomic processed-CSV writes.
+- Expanded automated edge-case and pipeline-contract coverage.
+- Configured CI to rebuild and test on Python 3.10 and Python 3.12.
+- Polished dashboard responsiveness, empty-result guidance, chart labels,
+  tooltips, focus visibility and download context without changing the model.
+- Clarified that the 71 output records are ABS-coded local areas: 68
+  incorporated LGAs plus three Unincorporated SA areas.
+- Created the Business Analysis foundation document under `docs/`.
+
+Final integrated pipeline, test and browser results are intentionally pending
+until the implementation review is complete.
 
 ### Known evidence gaps
 

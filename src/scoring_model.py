@@ -8,6 +8,7 @@ can be combined without arbitrary dollar thresholds.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from math import isfinite
 
 import pandas as pd
 
@@ -22,8 +23,8 @@ class ScoreWeights:
 
     def validate(self) -> None:
         values = (self.affordability, self.demand, self.supply_gap)
-        if any(value < 0 for value in values):
-            raise ValueError("Score weights cannot be negative.")
+        if any(not isfinite(value) or value < 0 for value in values):
+            raise ValueError("Score weights must be finite and non-negative.")
         if abs(sum(values) - 1.0) > 1e-9:
             raise ValueError("Score weights must sum to 1.0.")
 
@@ -32,6 +33,7 @@ def percentile_score(series: pd.Series, *, higher_is_pressure: bool = True) -> p
     """Return a 0–100 percentile score while preserving missing values."""
 
     numeric = pd.to_numeric(series, errors="coerce")
+    numeric = numeric.where(numeric.abs().ne(float("inf")))
     score = numeric.rank(method="average", pct=True) * 100
     if not higher_is_pressure:
         score = 100 - score

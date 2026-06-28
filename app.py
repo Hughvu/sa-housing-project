@@ -23,6 +23,12 @@ CATEGORY_COLOURS = {
     "Not scored": "#64748B",
 }
 
+CHART_CONFIG = {
+    "displaylogo": False,
+    "responsive": True,
+    "scrollZoom": False,
+}
+
 REQUIRED_LGA_COLUMNS = {
     "LGA_Name",
     "Total_Median",
@@ -48,12 +54,29 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-      .block-container {padding-top: 2rem; padding-bottom: 3rem;}
-      [data-testid="stMetric"] {
-        border: 1px solid #dbe3ec; border-radius: 0.65rem;
-        padding: 0.8rem 1rem; background: #f8fafc;
+      .block-container {
+        padding-top: 1.75rem;
+        padding-bottom: 3rem;
+        max-width: 1400px;
       }
-      .source-note {font-size: 0.86rem; color: #475569;}
+      [data-testid="stMetric"] {
+        border: 1px solid rgba(100, 116, 139, 0.35);
+        border-radius: 0.65rem;
+        padding: 0.8rem 1rem;
+        background: var(--secondary-background-color);
+      }
+      [data-testid="stMetricLabel"] {font-weight: 600;}
+      [data-testid="stCaptionContainer"] {max-width: 78rem;}
+      .stDownloadButton button {min-height: 2.75rem;}
+      :focus-visible {
+        outline: 3px solid #2563eb !important;
+        outline-offset: 2px !important;
+      }
+      @media (max-width: 700px) {
+        .block-container {padding-top: 1rem; padding-left: 1rem; padding-right: 1rem;}
+        h1 {font-size: 1.85rem !important;}
+        h2 {font-size: 1.45rem !important;}
+      }
     </style>
     """,
     unsafe_allow_html=True,
@@ -76,6 +99,30 @@ def load_data() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]
     return lga, monthly.sort_values("Month"), annual, ytd
 
 
+def show_plotly_chart(figure: go.Figure) -> None:
+    """Render a responsive chart with consistent accessible presentation."""
+    figure.update_layout(
+        font={"size": 14},
+        margin={"l": 20, "r": 20, "t": 70, "b": 45},
+        legend_title_text="",
+        hoverlabel={"font_size": 14},
+    )
+    st.plotly_chart(
+        figure,
+        width="stretch",
+        config=CHART_CONFIG,
+    )
+
+
+def show_no_results(context: str) -> None:
+    """Explain an empty filtered view and give a clear recovery action."""
+    st.warning(
+        f"No scored LGAs are available for {context} with the current filters. "
+        "Broaden the pressure categories, rental sample qualities, or LGA search "
+        "in the sidebar."
+    )
+
+
 try:
     lga, monthly, annual, ytd = load_data()
 except (FileNotFoundError, ValueError) as error:
@@ -91,6 +138,7 @@ st.caption(
 )
 
 st.sidebar.header("Filters")
+st.sidebar.caption("Filters apply to the three LGA analysis tabs.")
 selected_categories = st.sidebar.multiselect(
     "Relative pressure category",
     options=CATEGORY_ORDER,
@@ -120,6 +168,7 @@ if search_text:
     ]
 
 st.sidebar.divider()
+st.sidebar.metric("Areas shown", f"{len(filtered)} of {len(lga)}")
 st.sidebar.caption(
     "Only LGAs with at least 10 published quarterly rental bonds and complete "
     "inputs receive a pressure score."
@@ -188,7 +237,8 @@ with tabs[0]:
         },
     )
     fig.update_layout(showlegend=False, height=530)
-    st.plotly_chart(fig, width="stretch")
+    fig.update_xaxes(range=[0, 100], ticksuffix="")
+    show_plotly_chart(fig)
 
     st.subheader("How to read the result")
     c1, c2, c3 = st.columns(3)
@@ -207,46 +257,59 @@ with tabs[0]:
 with tabs[1]:
     st.header("LGA pressure comparison")
     if filtered.empty:
-        st.warning("No LGAs match the selected filters.")
+        show_no_results("the pressure comparison")
     else:
         plot_data = filtered[filtered["Complete_Score"]].copy()
-        fig = px.scatter(
-            plot_data,
-            x="Approvals_per_1000",
-            y="Rent_to_Income_Proxy_Pct",
-            size="Population_2025",
-            color="Housing_Pressure_Category",
-            color_discrete_map=CATEGORY_COLOURS,
-            category_orders={"Housing_Pressure_Category": CATEGORY_ORDER},
-            hover_name="LGA_Name",
-            hover_data={
-                "Housing_Pressure_Index": ":.1f",
-                "Population_Growth_Pct": ":.1f",
-                "Total_Median": ":$,.0f",
-                "Total_Count": ":,.0f",
-                "Sample_Quality": True,
-                "Population_2025": ":,.0f",
-            },
-            title="Rental-cost proxy versus dwelling approvals",
-            labels={
-                "Approvals_per_1000": "2024–25 dwelling approvals per 1,000 residents",
-                "Rent_to_Income_Proxy_Pct": "Rent-to-income proxy (%)",
-            },
-        )
-        fig.add_hline(
-            y=30,
-            line_dash="dot",
-            line_color="#475569",
-            annotation_text="30% reference only",
-        )
-        fig.update_layout(height=600)
-        st.plotly_chart(fig, width="stretch")
-        st.caption(
-            "Bubble size represents June 2025 population. The 30% line is contextual: "
-            "the income denominator is the 2021 Census median and is not a current "
-            "household-level rental-stress measure."
-        )
+        if plot_data.empty:
+            show_no_results("the pressure comparison")
+        else:
+            fig = px.scatter(
+                plot_data,
+                x="Approvals_per_1000",
+                y="Rent_to_Income_Proxy_Pct",
+                size="Population_2025",
+                color="Housing_Pressure_Category",
+                color_discrete_map=CATEGORY_COLOURS,
+                category_orders={"Housing_Pressure_Category": CATEGORY_ORDER},
+                hover_name="LGA_Name",
+                hover_data={
+                    "Housing_Pressure_Index": ":.1f",
+                    "Population_Growth_Pct": ":.1f",
+                    "Total_Median": ":$,.0f",
+                    "Total_Count": ":,.0f",
+                    "Sample_Quality": True,
+                    "Population_2025": ":,.0f",
+                },
+                title="Rental-cost proxy versus dwelling approvals",
+                labels={
+                    "Approvals_per_1000": "2024–25 approvals per 1,000 residents",
+                    "Rent_to_Income_Proxy_Pct": "Rent-to-income proxy (%)",
+                    "Housing_Pressure_Category": "Pressure category",
+                    "Housing_Pressure_Index": "Pressure index",
+                    "Population_Growth_Pct": "Population growth (%)",
+                    "Total_Median": "Median weekly rent",
+                    "Total_Count": "Published rental bonds",
+                    "Sample_Quality": "Sample quality",
+                    "Population_2025": "June 2025 population",
+                },
+            )
+            fig.add_hline(
+                y=30,
+                line_dash="dot",
+                line_color="#475569",
+                annotation_text="30% reference only",
+            )
+            fig.update_layout(height=600)
+            fig.update_xaxes(rangemode="tozero")
+            fig.update_yaxes(rangemode="tozero", ticksuffix="%")
+            show_plotly_chart(fig)
+            st.caption(
+                "Bubble size represents June 2025 population. The 30% line is "
+                "contextual: the income denominator is the 2021 Census median and "
+                "is not a current household-level rental-stress measure."
+            )
 
+    if not filtered.empty:
         display_columns = [
             "LGA_Name",
             "Housing_Pressure_Index",
@@ -277,6 +340,10 @@ with tabs[1]:
                 "Approvals_per_1000": st.column_config.NumberColumn(
                     "Approvals/1,000", format="%.2f"
                 ),
+                "Total_Count": st.column_config.NumberColumn(
+                    "Published bonds", format="%d"
+                ),
+                "Sample_Quality": "Sample quality",
             },
         )
 
@@ -290,62 +357,106 @@ with tabs[2]:
     eligible = filtered[filtered["Complete_Score"]].nlargest(
         20, "Rent_to_Income_Proxy_Pct"
     )
-    fig = px.bar(
-        eligible.sort_values("Rent_to_Income_Proxy_Pct"),
-        x="Rent_to_Income_Proxy_Pct",
-        y="LGA_Name",
-        color="Sample_Quality",
-        orientation="h",
-        title="Highest median-rent-to-household-income proxies",
-        labels={
-            "Rent_to_Income_Proxy_Pct": "Rent-to-income proxy (%)",
-            "LGA_Name": "LGA",
-        },
-        hover_data={
-            "Total_Median": ":$,.0f",
-            "Median_Weekly_Household_Income_2021": ":$,.0f",
-            "Total_Count": ":,.0f",
-        },
-    )
-    fig.add_vline(x=30, line_dash="dot", line_color="#475569")
-    fig.update_layout(height=650)
-    st.plotly_chart(fig, width="stretch")
+    if eligible.empty:
+        show_no_results("the rental affordability comparison")
+    else:
+        fig = px.bar(
+            eligible.sort_values("Rent_to_Income_Proxy_Pct"),
+            x="Rent_to_Income_Proxy_Pct",
+            y="LGA_Name",
+            color="Sample_Quality",
+            orientation="h",
+            title="Highest median-rent-to-household-income proxies",
+            labels={
+                "Rent_to_Income_Proxy_Pct": "Rent-to-income proxy (%)",
+                "LGA_Name": "LGA",
+                "Sample_Quality": "Rental sample quality",
+                "Total_Median": "Median weekly rent",
+                "Median_Weekly_Household_Income_2021": (
+                    "2021 median weekly household income"
+                ),
+                "Total_Count": "Published rental bonds",
+            },
+            hover_data={
+                "Total_Median": ":$,.0f",
+                "Median_Weekly_Household_Income_2021": ":$,.0f",
+                "Total_Count": ":,.0f",
+            },
+        )
+        fig.add_vline(
+            x=30,
+            line_dash="dot",
+            line_color="#475569",
+            annotation_text="30% reference only",
+        )
+        fig.update_layout(height=650)
+        fig.update_xaxes(rangemode="tozero", ticksuffix="%")
+        show_plotly_chart(fig)
 
     excluded = lga[~lga["Eligible_for_Score"]][
         ["LGA_Name", "Total_Median", "Total_Count", "Sample_Quality"]
     ]
     with st.expander(f"Areas excluded by the sample rule ({len(excluded)})"):
-        st.dataframe(excluded, width="stretch", hide_index=True)
+        st.caption(
+            "These areas have fewer than 10 published quarterly rental bonds. "
+            "They are shown for transparency and are not included in the index."
+        )
+        st.dataframe(
+            excluded,
+            width="stretch",
+            hide_index=True,
+            column_config={
+                "LGA_Name": "LGA",
+                "Total_Median": st.column_config.NumberColumn(
+                    "Median weekly rent", format="$%d"
+                ),
+                "Total_Count": st.column_config.NumberColumn(
+                    "Published bonds", format="%d"
+                ),
+                "Sample_Quality": "Sample quality",
+            },
+        )
 
 
 with tabs[3]:
     st.header("Local supply and demand")
     supply_data = filtered[filtered["Complete_Score"]].copy()
-    fig = px.scatter(
-        supply_data,
-        x="Population_Growth_Pct",
-        y="Approvals_per_1000",
-        color="Housing_Pressure_Category",
-        color_discrete_map=CATEGORY_COLOURS,
-        size="Population_2025",
-        hover_name="LGA_Name",
-        hover_data={
-            "Approvals_2024_25": ":,.0f",
-            "Approvals_2025_26_FYTD": ":,.0f",
-            "Population_2025": ":,.0f",
-        },
-        title="Population growth versus approved supply",
-        labels={
-            "Population_Growth_Pct": "Population growth, 2024–25 (%)",
-            "Approvals_per_1000": "2024–25 approvals per 1,000 residents",
-        },
-    )
-    fig.update_layout(height=600)
-    st.plotly_chart(fig, width="stretch")
-    st.caption(
-        "Small-area approvals are volatile and subject to revision. The index uses "
-        "a completed financial year rather than comparing a partial year with a full year."
-    )
+    if supply_data.empty:
+        show_no_results("the local supply and demand comparison")
+    else:
+        fig = px.scatter(
+            supply_data,
+            x="Population_Growth_Pct",
+            y="Approvals_per_1000",
+            color="Housing_Pressure_Category",
+            color_discrete_map=CATEGORY_COLOURS,
+            category_orders={"Housing_Pressure_Category": CATEGORY_ORDER},
+            size="Population_2025",
+            hover_name="LGA_Name",
+            hover_data={
+                "Approvals_2024_25": ":,.0f",
+                "Approvals_2025_26_FYTD": ":,.0f",
+                "Population_2025": ":,.0f",
+            },
+            title="Population growth versus approved supply",
+            labels={
+                "Population_Growth_Pct": "Population growth, 2024–25 (%)",
+                "Approvals_per_1000": "2024–25 approvals per 1,000 residents",
+                "Housing_Pressure_Category": "Pressure category",
+                "Approvals_2024_25": "2024–25 approvals",
+                "Approvals_2025_26_FYTD": "2025–26 approvals (FYTD)",
+                "Population_2025": "June 2025 population",
+            },
+        )
+        fig.update_layout(height=600)
+        fig.update_xaxes(ticksuffix="%")
+        fig.update_yaxes(rangemode="tozero")
+        show_plotly_chart(fig)
+        st.caption(
+            "Bubble size represents June 2025 population. Small-area approvals "
+            "are volatile and subject to revision. The index uses a completed "
+            "financial year rather than comparing a partial year with a full year."
+        )
 
 
 with tabs[4]:
@@ -380,7 +491,8 @@ with tabs[4]:
         height=500,
         hovermode="x unified",
     )
-    st.plotly_chart(fig, width="stretch")
+    fig.update_yaxes(rangemode="tozero", tickformat=",")
+    show_plotly_chart(fig)
 
     c1, c2 = st.columns(2)
     with c1:
@@ -397,7 +509,9 @@ with tabs[4]:
             labels={"Year_Label": "Period", "Dwelling_Approvals": "Approvals"},
             text_auto=",.0f",
         )
-        st.plotly_chart(annual_fig, width="stretch")
+        annual_fig.update_yaxes(rangemode="tozero", tickformat=",")
+        annual_fig.update_traces(textposition="outside", cliponaxis=False)
+        show_plotly_chart(annual_fig)
     with c2:
         ytd_fig = px.bar(
             ytd,
@@ -408,7 +522,9 @@ with tabs[4]:
             text_auto=",.0f",
         )
         ytd_fig.update_traces(marker_color="#0F766E")
-        st.plotly_chart(ytd_fig, width="stretch")
+        ytd_fig.update_yaxes(rangemode="tozero", tickformat=",")
+        ytd_fig.update_traces(textposition="outside", cliponaxis=False)
+        show_plotly_chart(ytd_fig)
 
 
 with tabs[5]:
@@ -469,11 +585,14 @@ with tabs[5]:
         lga.to_csv(index=False).encode("utf-8"),
         file_name="sa_lga_housing_pressure.csv",
         mime="text/csv",
+        help="Includes scored and unscored areas plus source-quality fields.",
     )
     d2.download_button(
         "Download state monthly approvals",
         monthly.to_csv(index=False).encode("utf-8"),
         file_name="sa_monthly_dwelling_approvals.csv",
         mime="text/csv",
+        help="Includes monthly approvals and the three-month rolling average.",
     )
-    st.dataframe(lga, width="stretch", hide_index=True)
+    with st.expander("Preview the full LGA analytical dataset"):
+        st.dataframe(lga, width="stretch", hide_index=True)

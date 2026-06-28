@@ -32,11 +32,54 @@
 
 ## State approval outputs
 
-`dashboard_monthly_approvals.csv` contains the ABS original monthly series and a
-three-month rolling average. `dashboard_annual_approvals.csv` includes
-`Months_Covered`, `Period_Status` and `Year_Label` so partial years cannot appear
-as complete years. `dashboard_ytd_approvals.csv` provides comparable
-January-to-latest-month totals for each year.
+### `dashboard_monthly_approvals.csv`
+
+| Field | Type | Definition |
+|---|---|---|
+| `Month` | date | Calendar month in ISO date form |
+| `Dwelling_Approvals` | dwellings | ABS original-series South Australian dwelling approvals |
+| `Year` | integer | Calendar year |
+| `Month_Number` | integer | Month number, 1–12 |
+| `Month_Name` | text | Display label such as `Apr 2026` |
+| `Rolling_3_Month_Avg` | dwellings | Three-month rolling mean; unavailable for the first two observations |
+| `Series_Type` | text | `Original`; the series is not seasonally adjusted |
+
+### `dashboard_annual_approvals.csv`
+
+| Field | Type | Definition |
+|---|---|---|
+| `Year` | integer | Calendar year |
+| `Dwelling_Approvals` | dwellings | Sum of available monthly approvals |
+| `Months_Covered` | integer | Number of months included |
+| `Period_Status` | text | `Full calendar year` or `Year to date` |
+| `Year_Label` | text | Display label that makes a partial year explicit |
+
+### `dashboard_ytd_approvals.csv`
+
+| Field | Type | Definition |
+|---|---|---|
+| `Year` | integer | Calendar year |
+| `YTD_Dwelling_Approvals` | dwellings | January-to-comparison-month approval total |
+| `Months_Compared` | integer | Common number of months included in every year |
+| `Comparison_Label` | text | Human-readable comparison window, currently January–April |
+
+### `data_quality_summary.csv`
+
+| Field | Type | Definition |
+|---|---|---|
+| `Check` | text | Validation or coverage measure name |
+| `Value` | mixed | Recorded count or latest source date |
+
+The current quality summary records the number of local areas in the output,
+the number with complete scores, the number with suppressed/low rental samples,
+and the latest state approval month.
+
+## Geography coverage
+
+The 71 records in `dashboard_lga_pressure.csv` are ABS-coded local areas: 68
+incorporated LGAs and three Unincorporated SA statistical areas. `LGA_Code` and
+`LGA_Name` follow the ABS source nomenclature. “71 local areas” therefore does
+not mean 71 councils.
 
 ## Interpretation rule
 
