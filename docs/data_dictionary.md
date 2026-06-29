@@ -111,6 +111,31 @@ The current quality summary records the number of local areas in the output,
 the number with complete scores, the number with suppressed/low rental samples,
 and the latest state approval month.
 
+## Decision Explorer runtime fields and exports
+
+The explorer evaluates rules at runtime from `dashboard_lga_pressure.csv`; it
+does not add a new processed score. Ruleset `sa-housing-screening-v1` version
+`1.0` adds derived match, reason, component-explanation and ranking-status
+fields in memory.
+
+The auditable CSV is one row per local area and rule. Its exact fields are:
+
+| Field group | Fields | Evidence |
+|---|---|---|
+| Ruleset | `Ruleset_ID`, `Ruleset_Version`, `Rule_ID`, `Rule_Name`, `Question`, `Expression` | Derived metadata |
+| Evaluation | `Matched`, `Evaluation_Reason`, `Permitted_Interpretation`, `Pressure_Ranking_Status`, `Evidence_Gap_Reason` | Derived |
+| Identity | `LGA_Name` | Observed copy |
+| Existing score | `Housing_Pressure_Index`, `Housing_Pressure_Category`, `Affordability_Pressure_Score`, `Demand_Pressure_Score`, `Supply_Gap_Score` | Derived copy |
+| Raw evidence | `Rent_to_Income_Proxy_Pct`, `Population_Growth_Pct`, `Population_Change`, `Approvals_per_1000`, `Approvals_2024_25`, `Other_Residential_Approval_Share_Pct`, `Total_Count`, `Sample_Quality` | Existing proxy, observed and derived copies |
+| Driver explanation | `Highest_Index_Component`, `Highest_Component_Score`, `Highest_Component_Is_Tied` | Derived |
+| Full-reference benchmarks | `Reference_Population_Growth_Median_Pct`, `Reference_Approvals_per_1000_Median`, `Reference_Complete_LGA_Count` | Derived from all 53 complete scored areas |
+| Audit context | `Source_Periods`, `Fixed_Limitations` | Versioned metadata |
+
+Rules may match non-exclusively. The growth/approval benchmark fields use the
+full scored reference cohort and do not change with UI filters. Positive
+shortlists are ordered by existing HPI only; Evidence gaps are never ranked.
+See [`decision_explorer.md`](decision_explorer.md) for the complete contract.
+
 ## Geography coverage
 
 The 71 records in `dashboard_lga_pressure.csv` are ABS-coded local areas: 68

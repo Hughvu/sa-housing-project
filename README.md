@@ -69,6 +69,18 @@ See [`docs/data_dictionary.md`](docs/data_dictionary.md) for field definitions.
 The expanded evidence design and interpretation workflow are documented in
 [`docs/analytical_framework.md`](docs/analytical_framework.md).
 
+## Decision Explorer
+
+The Decision Explorer applies the fixed, versioned
+`sa-housing-screening-v1` rules to the full statewide dataset. It shows
+transparent rule matches, match reasons and two-to-five-area comparisons while
+leaving the existing 50/25/25 Housing Pressure Index unchanged.
+
+Matches are investigation prompts, not recommendations, forecasts, shortage
+findings or policy priorities. Multiple rules may match the same area;
+evidence-gap areas are shown separately and never pressure-ranked. See the
+[Decision Explorer rule contract](docs/decision_explorer.md).
+
 ## Evidence layers
 
 The dashboard deliberately separates three layers:
@@ -116,6 +128,7 @@ data/raw/                      Immutable source files
 data/processed/                Rebuildable dashboard datasets
 docs/data_dictionary.md        Output field definitions
 docs/analytical_framework.md   Evidence layers and interpretation rules
+docs/decision_explorer.md      Versioned screening-rule contract
 docs/source_register.md        Sources, periods and caveats
 project_status.md              Chronological implementation log
 ```

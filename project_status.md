@@ -144,3 +144,38 @@ metrics changes ranking.
   and 390 × 844 mobile width.
 - The production mobile viewport had no horizontal page overflow, and the
   browser console reported no warnings or errors.
+
+## 2026-06-29 — Decision Explorer implementation documented
+
+### Implemented contract
+
+- Added the fixed screening ruleset `sa-housing-screening-v1`, version `1.0`.
+- Added four non-exclusive positive evidence screens and a separate unranked
+  Evidence gaps screen.
+- Fixed the growth/approval benchmark cohort to the full 53 complete scored
+  areas so sidebar filters cannot change rule membership.
+- Preserved existing HPI ordering for positive matches and alphabetical,
+  non-ranked treatment for evidence gaps; no new priority score was introduced.
+- Added transparent match reasons, full-reference benchmarks, two-to-five-area
+  comparisons, versioned CSV exports and Markdown comparison briefs.
+- Documented exact expressions, source periods, raw export evidence,
+  interpretation boundaries, limitations and version governance in
+  `docs/decision_explorer.md`.
+
+### Model status
+
+The underlying Housing Pressure Index remains unchanged: 50% affordability
+pressure, 25% population-demand pressure and 25% supply gap. Decision Explorer
+matches are non-advisory investigation prompts and do not alter that model.
+
+### Verification status
+
+- Final automated suite: 124 passed in 6.48 seconds.
+- Streamlit runtime harness: seven tabs and no application exceptions.
+- Browser verification confirmed the default broad-pressure screen, the
+  separate 18-area unranked Evidence gaps screen, two-area comparison,
+  versioned download controls and rule/benchmark disclosures.
+- Desktop and 390 × 844 narrow-view checks passed with no horizontal page
+  overflow and no browser console warnings or errors.
+- Tests confirmed that the Decision Explorer does not change any Housing
+  Pressure Index value or category.

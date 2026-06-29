@@ -9,6 +9,19 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from src.decision_rules import (
+    POSITIVE_RULE_IDS,
+    RULE_BY_ID,
+    RULES,
+    RULESET_ID,
+    RULESET_VERSION,
+    build_auditable_export,
+    build_markdown_decision_brief,
+    deterministic_matched_shortlist,
+    evaluate_rules,
+    select_comparison_lgas,
+)
+
 
 ROOT = Path(__file__).resolve().parent
 DATA = ROOT / "data" / "processed"
@@ -191,7 +204,8 @@ def show_no_results(context: str) -> None:
 
 try:
     lga, monthly, annual, ytd = load_data()
-except (OSError, ValueError, pd.errors.ParserError) as error:
+    screening = evaluate_rules(lga)
+except (OSError, TypeError, ValueError, pd.errors.ParserError) as error:
     st.error(f"Dashboard data could not be loaded: {error}")
     st.code("python -m src.pipeline")
     st.stop()
@@ -251,6 +265,7 @@ tabs = st.tabs(
         "Supply & demand",
         "State pipeline",
         "Methodology & quality",
+        "Decision Explorer",
     ]
 )
 
@@ -1156,3 +1171,434 @@ with tabs[5]:
     )
     with st.expander("Preview the full LGA analytical dataset"):
         st.dataframe(lga, width="stretch", hide_index=True)
+
+
+with tabs[6]:
+    st.header("Decision Explorer")
+    st.warning(
+        "This explorer produces transparent investigation shortlists from fixed "
+        "screening rules. It does not recommend policy, development, investment "
+        "or resource allocation; it is not a forecast or a housing-shortage model."
+    )
+
+    rule_label_to_id = {
+        f"{rule.name} — {rule.question}": rule.rule_id for rule in RULES
+    }
+    selected_rule_label = st.selectbox(
+        "Decision question",
+        options=list(rule_label_to_id),
+        help="Each question uses a versioned fixed rule evaluated against the "
+        "full, unfiltered statewide dataset.",
+    )
+    selected_rule_id = rule_label_to_id[selected_rule_label]
+    selected_rule = RULE_BY_ID[selected_rule_id]
+    shortlist_size = st.slider(
+        "Maximum positive-rule shortlist size",
+        min_value=5,
+        max_value=15,
+        value=10,
+        help="Evidence-gap results are always shown in full and alphabetically; "
+        "they are never pressure-ranked.",
+    )
+
+    st.caption(
+        f"Ruleset `{RULESET_ID}` version `{RULESET_VERSION}`. Rule membership "
+        "and reference benchmarks were evaluated once from the full statewide "
+        "frame and do not change with sidebar filters."
+    )
+    st.markdown(f"**Exact expression:** `{selected_rule.expression}`")
+    st.markdown(
+        f"**Permitted interpretation:** {selected_rule.permitted_interpretation}"
+    )
+    st.markdown(
+        "**Full-reference benchmarks:** "
+        f"{screening.benchmarks.complete_lga_count} complete scored LGAs; "
+        f"population growth median "
+        f"{screening.benchmarks.population_growth_median_pct:.1f}%; "
+        f"approvals median "
+        f"{screening.benchmarks.approvals_per_1000_median:.2f} per 1,000."
+    )
+
+    full_rule_matches = deterministic_matched_shortlist(
+        screening,
+        [selected_rule_id],
+    )
+    statewide_match_count = len(full_rule_matches)
+    sidebar_match_count = int(
+        full_rule_matches["LGA_Name"].isin(filtered["LGA_Name"]).sum()
+    )
+    is_positive_rule = selected_rule_id in POSITIVE_RULE_IDS
+    if is_positive_rule:
+        visible_matches = full_rule_matches[
+            full_rule_matches["LGA_Name"].isin(filtered["LGA_Name"])
+        ].copy()
+        displayed_matches = visible_matches.head(shortlist_size).copy()
+        ordering_note = (
+            "Positive matches use the module's deterministic existing-HPI "
+            "descending order, with LGA name alphabetical for equal HPI values. "
+            "This is display ordering, not a new priority score."
+        )
+    else:
+        visible_matches = full_rule_matches.copy()
+        displayed_matches = visible_matches.copy()
+        ordering_note = (
+            "Evidence gaps are shown alphabetically and are not pressure-ranked. "
+            "Sidebar filters and the unscored checkbox do not remove this view."
+        )
+
+    category_filter_text = (
+        ", ".join(selected_categories) if selected_categories else "none selected"
+    )
+    quality_filter_text = (
+        ", ".join(selected_quality) if selected_quality else "none selected"
+    )
+    search_filter_text = search_text.strip() if search_text.strip() else "none"
+    st.markdown(
+        f"- **Statewide rule matches:** {statewide_match_count}\n"
+        f"- **Matches after current sidebar filters:** {sidebar_match_count}\n"
+        f"- **Sidebar context:** categories: {category_filter_text}; rental "
+        f"quality: {quality_filter_text}; search: {search_filter_text}; "
+        f"include-unscored toggle: {'on' if include_unscored else 'off'}.\n"
+        f"- **Ordering:** {ordering_note}"
+    )
+    st.caption(
+        "Positive screens require a complete score. Unscored areas are excluded "
+        "from positive shortlists, not classified as low pressure, and remain "
+        "available through the unranked Evidence gaps question."
+    )
+    if not is_positive_rule:
+        st.info(
+            "The post-filter count is disclosed for auditability only. All "
+            "evidence-gap matches remain visible because an evidence gap must "
+            "not be interpreted as low pressure."
+        )
+    elif statewide_match_count > sidebar_match_count:
+        st.info(
+            "Some statewide matches are outside the current sidebar filters. "
+            "Broaden the sidebar categories, sample qualities or search to see "
+            "them; their rule membership and statewide benchmarks do not change."
+        )
+
+    st.subheader("Transparent match table")
+    if displayed_matches.empty:
+        st.warning(
+            "The fixed rule has no matches within the current sidebar filters. "
+            "The statewide match count above remains unchanged. Broaden the "
+            "sidebar filters or choose another question."
+        )
+    else:
+        match_reason_column = f"Rule_{selected_rule_id}_Reason"
+        match_table = displayed_matches[
+            [
+                "LGA_Name",
+                "Housing_Pressure_Index",
+                "Housing_Pressure_Category",
+                "Highest_Index_Component",
+                "Rent_to_Income_Proxy_Pct",
+                "Population_Growth_Pct",
+                "Population_Change",
+                "Approvals_per_1000",
+                "Approvals_2024_25",
+                "Other_Residential_Approval_Share_Pct",
+                "Total_Count",
+                "Sample_Quality",
+                "Matched_Rule_IDs",
+                match_reason_column,
+                "Pressure_Ranking_Status",
+            ]
+        ].copy()
+        match_table["Matched_Rule_IDs"] = match_table[
+            "Matched_Rule_IDs"
+        ].map(
+            lambda value: ", ".join(
+                RULE_BY_ID[rule_id].name
+                for rule_id in str(value).split(";")
+                if rule_id
+            )
+        )
+        if is_positive_rule:
+            match_table.insert(
+                0,
+                "Display_Order",
+                range(1, len(match_table) + 1),
+            )
+        st.dataframe(
+            match_table,
+            width="stretch",
+            hide_index=True,
+            column_config={
+                "Display_Order": "Display order",
+                "LGA_Name": "LGA",
+                "Housing_Pressure_Index": st.column_config.NumberColumn(
+                    "Existing HPI", format="%.1f"
+                ),
+                "Housing_Pressure_Category": "HPI category",
+                "Highest_Index_Component": "Largest index component",
+                "Rent_to_Income_Proxy_Pct": st.column_config.NumberColumn(
+                    "Rent/income proxy", format="%.1f%%"
+                ),
+                "Population_Growth_Pct": st.column_config.NumberColumn(
+                    "Population growth", format="%.1f%%"
+                ),
+                "Population_Change": st.column_config.NumberColumn(
+                    "Population change", format="%d"
+                ),
+                "Approvals_per_1000": st.column_config.NumberColumn(
+                    "Approvals/1,000", format="%.2f"
+                ),
+                "Approvals_2024_25": st.column_config.NumberColumn(
+                    "2024–25 approvals", format="%d"
+                ),
+                "Other_Residential_Approval_Share_Pct": (
+                    st.column_config.NumberColumn(
+                        "Other-residential share", format="%.1f%%"
+                    )
+                ),
+                "Total_Count": st.column_config.NumberColumn(
+                    "Published bonds", format="%d"
+                ),
+                "Sample_Quality": "Rental sample quality",
+                "Matched_Rule_IDs": "All matched screens",
+                match_reason_column: "Why this rule matched",
+                "Pressure_Ranking_Status": "Ranking status",
+            },
+        )
+        st.caption(
+            "Rows can match more than one fixed screen. Raw values are shown as "
+            "evidence; they are not combined into another score."
+        )
+
+    st.subheader("Compare matched areas and contextual comparators")
+    matched_names = displayed_matches["LGA_Name"].tolist()
+    all_comparison_names = matched_names + [
+        name
+        for name in sorted(screening.frame["LGA_Name"].tolist())
+        if name not in matched_names
+    ]
+    default_comparison = matched_names[:2]
+    if len(default_comparison) < 2:
+        default_comparison.extend(
+            name
+            for name in all_comparison_names
+            if name not in default_comparison
+        )
+        default_comparison = default_comparison[:2]
+    comparison_names = st.multiselect(
+        "Select 2–5 LGAs in the order they should appear",
+        options=all_comparison_names,
+        default=default_comparison,
+        max_selections=5,
+        help="The first options are currently displayed matches; all other "
+        "areas remain available as contextual comparators.",
+    )
+
+    if len(comparison_names) < 2:
+        st.info(
+            "Select at least two LGAs to show the comparison, evidence panels "
+            "and Markdown brief."
+        )
+    else:
+        comparison = select_comparison_lgas(screening, comparison_names)
+        scored_comparison = comparison[comparison["Complete_Score"]].copy()
+        if scored_comparison.empty:
+            st.info(
+                "None of the selected areas has a complete pressure score, so "
+                "no component chart is shown. Their raw evidence remains below."
+            )
+        else:
+            component_long = scored_comparison[
+                [
+                    "LGA_Name",
+                    "Affordability_Pressure_Score",
+                    "Demand_Pressure_Score",
+                    "Supply_Gap_Score",
+                ]
+            ].melt(
+                id_vars="LGA_Name",
+                var_name="Index component",
+                value_name="Percentile score",
+            )
+            component_long["Index component"] = component_long[
+                "Index component"
+            ].map(
+                {
+                    "Affordability_Pressure_Score": "Affordability",
+                    "Demand_Pressure_Score": "Population growth",
+                    "Supply_Gap_Score": "Lower approval rate",
+                }
+            )
+            component_fig = px.bar(
+                component_long,
+                x="Percentile score",
+                y="LGA_Name",
+                color="Index component",
+                barmode="group",
+                orientation="h",
+                text_auto=".1f",
+                title="Existing index components for scored selections",
+                labels={"LGA_Name": "LGA"},
+                color_discrete_map={
+                    "Affordability": "#991B1B",
+                    "Population growth": "#2563EB",
+                    "Lower approval rate": "#0F766E",
+                },
+            )
+            component_fig.update_xaxes(range=[0, 105])
+            component_fig.update_layout(
+                height=max(360, 85 * len(scored_comparison) + 170)
+            )
+            show_plotly_chart(component_fig)
+            st.caption(
+                "Direct labels and the raw-evidence table provide non-colour "
+                "equivalents. Components are existing eligible-area percentiles."
+            )
+
+        comparison_table = comparison[
+            [
+                "LGA_Name",
+                "Pressure_Ranking_Status",
+                "Housing_Pressure_Index",
+                "Housing_Pressure_Category",
+                "Affordability_Pressure_Score",
+                "Demand_Pressure_Score",
+                "Supply_Gap_Score",
+                "Total_Median",
+                "Median_Weekly_Household_Income_2021",
+                "Rent_to_Income_Proxy_Pct",
+                "Population_2025",
+                "Population_Growth_Pct",
+                "Population_Change",
+                "Approvals_per_1000",
+                "Approvals_2024_25",
+                "Other_Residential_Approval_Share_Pct",
+                "Total_Count",
+                "Sample_Quality",
+            ]
+        ].copy()
+        comparison_table.insert(
+            0,
+            "Selection_Order",
+            range(1, len(comparison_table) + 1),
+        )
+        st.dataframe(
+            comparison_table,
+            width="stretch",
+            hide_index=True,
+            column_config={
+                "Selection_Order": "Selection order",
+                "LGA_Name": "LGA",
+                "Pressure_Ranking_Status": "Ranking status",
+                "Housing_Pressure_Index": st.column_config.NumberColumn(
+                    "Existing HPI", format="%.1f"
+                ),
+                "Housing_Pressure_Category": "HPI category",
+                "Affordability_Pressure_Score": st.column_config.NumberColumn(
+                    "Affordability component", format="%.1f"
+                ),
+                "Demand_Pressure_Score": st.column_config.NumberColumn(
+                    "Growth component", format="%.1f"
+                ),
+                "Supply_Gap_Score": st.column_config.NumberColumn(
+                    "Approval-rate component", format="%.1f"
+                ),
+                "Total_Median": st.column_config.NumberColumn(
+                    "Median weekly rent", format="$%d"
+                ),
+                "Median_Weekly_Household_Income_2021": (
+                    st.column_config.NumberColumn(
+                        "2021 weekly household income", format="$%d"
+                    )
+                ),
+                "Rent_to_Income_Proxy_Pct": st.column_config.NumberColumn(
+                    "Rent/income proxy", format="%.1f%%"
+                ),
+                "Population_2025": st.column_config.NumberColumn(
+                    "June 2025 population", format="%d"
+                ),
+                "Population_Growth_Pct": st.column_config.NumberColumn(
+                    "Population growth", format="%.1f%%"
+                ),
+                "Population_Change": st.column_config.NumberColumn(
+                    "Population change", format="%d"
+                ),
+                "Approvals_per_1000": st.column_config.NumberColumn(
+                    "Approvals/1,000", format="%.2f"
+                ),
+                "Approvals_2024_25": st.column_config.NumberColumn(
+                    "2024–25 approvals", format="%d"
+                ),
+                "Other_Residential_Approval_Share_Pct": (
+                    st.column_config.NumberColumn(
+                        "Other-residential share", format="%.1f%%"
+                    )
+                ),
+                "Total_Count": st.column_config.NumberColumn(
+                    "Published bonds", format="%d"
+                ),
+                "Sample_Quality": "Rental sample quality",
+            },
+        )
+
+        st.markdown("#### Evidence panels")
+        for _, area in comparison.iterrows():
+            with st.expander(str(area["LGA_Name"])):
+                st.markdown(
+                    f"- **Ranking status:** {area['Pressure_Ranking_Status']}.\n"
+                    f"- **Selected screen:** "
+                    f"{area[f'Rule_{selected_rule_id}_Reason']}\n"
+                    f"- **Largest existing index component:** "
+                    f"{area['Highest_Index_Component']}"
+                    + (
+                        f" ({area['Highest_Component_Score']:.1f}).\n"
+                        if pd.notna(area["Highest_Component_Score"])
+                        else ".\n"
+                    )
+                    + f"- **Rental evidence:** {area['Sample_Quality']}; "
+                    f"{area['Total_Count']:,.0f} published bonds where available.\n"
+                    f"- **Observed context:** population growth "
+                    f"{area['Population_Growth_Pct']:.1f}%; "
+                    f"{area['Approvals_per_1000']:.2f} approvals per 1,000 "
+                    "residents. Approvals are permits, not completed supply."
+                )
+                if area["Evidence_Gap_Reason"]:
+                    st.warning(f"Evidence gap: {area['Evidence_Gap_Reason']}")
+
+    st.subheader("Auditable downloads")
+    auditable_export = build_auditable_export(screening)
+    export_names = displayed_matches["LGA_Name"].tolist()
+    shortlist_export = auditable_export[
+        auditable_export["Rule_ID"].eq(selected_rule_id)
+        & auditable_export["Matched"]
+        & auditable_export["LGA_Name"].isin(export_names)
+    ].copy()
+    version_slug = RULESET_VERSION.replace(".", "-")
+    st.download_button(
+        "Download versioned shortlist CSV",
+        shortlist_export.to_csv(index=False).encode("utf-8"),
+        file_name=(
+            f"sa_decision_shortlist_{selected_rule_id}_v{version_slug}.csv"
+        ),
+        mime="text/csv",
+        disabled=shortlist_export.empty,
+        help="Exports the displayed matches from the module's full auditable "
+        "one-row-per-LGA-and-rule dataset.",
+    )
+    if len(comparison_names) >= 2:
+        markdown_brief = build_markdown_decision_brief(
+            screening,
+            comparison_names,
+        )
+        st.download_button(
+            "Download versioned Markdown comparison brief",
+            markdown_brief.encode("utf-8"),
+            file_name=f"sa_decision_brief_v{version_slug}.md",
+            mime="text/markdown",
+            help="Generated by the decision-rules module with fixed source "
+            "periods, rule results and limitations.",
+        )
+    st.caption(
+        "The rent-to-income evidence combines December-quarter 2025 rents with "
+        "2021 Census household income. Approvals are original-series permits, "
+        "are volatile and revised, and do not demonstrate commencement, "
+        "completion, housing sufficiency or infrastructure capacity."
+    )

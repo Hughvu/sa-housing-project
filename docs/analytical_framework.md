@@ -169,6 +169,31 @@ Any proposal to change score inputs, weights, thresholds, eligibility, ranking
 direction or tie handling is a model change. It requires sensitivity analysis,
 tests, documentation and release approval.
 
+## Decision Explorer
+
+The Decision Explorer is a non-advisory screening layer over the existing
+evidence model. Ruleset `sa-housing-screening-v1`, version `1.0`, evaluates five
+fixed questions:
+
+- all three index components at or above 60;
+- affordability at or above 80 with demand or supply gap at or above 40;
+- population growth above and approvals per 1,000 below full-reference medians;
+- existing HPI at or above 60 with at least 20 published bonds; and
+- incomplete-score evidence gaps.
+
+Matches are non-exclusive. Positive rules require a complete score and use the
+full 53-area scored reference cohort. The reference medians and rule memberships
+are unaffected by sidebar filters. Positive results use only the existing HPI
+for display ordering; evidence gaps are alphabetical and never ranked.
+
+Users may compare two to five local areas, including contextual comparators that
+do not match the selected rule. The comparison does not calculate a new score or
+modify the index.
+
+The exact expressions, permitted and prohibited interpretations, export schema,
+source periods, fixed limitations and version-governance rules are defined in
+[`decision_explorer.md`](decision_explorer.md).
+
 ## Authoritative evidence roadmap
 
 ### Near term
