@@ -222,14 +222,25 @@ def load_lga_approvals(path: Path, period_label: str) -> pd.DataFrame:
     raw = _read_excel(path, sheet_name="Table_1", header=4)
     _require_column_positions(
         raw,
-        [0, 1, 4],
+        [0, 1, 2, 3, 4],
         source=f"{path.name} worksheet 'Table_1'",
     )
-    approvals = raw.iloc[:, [0, 1, 4]].copy()
-    approvals.columns = ["LGA_Code", "LGA_Name", "Dwelling_Approvals"]
+    approvals = raw.iloc[:, [0, 1, 2, 3, 4]].copy()
+    approvals.columns = [
+        "LGA_Code",
+        "LGA_Name",
+        "House_Approvals",
+        "Other_Residential_Approvals",
+        "Dwelling_Approvals",
+    ]
     approvals["LGA_Code"] = pd.to_numeric(approvals["LGA_Code"], errors="coerce")
-    approvals["Dwelling_Approvals"] = pd.to_numeric(
-        approvals["Dwelling_Approvals"], errors="coerce"
+    approvals = _numeric(
+        approvals,
+        [
+            "House_Approvals",
+            "Other_Residential_Approvals",
+            "Dwelling_Approvals",
+        ],
     )
     approvals = approvals[
         approvals["LGA_Code"].between(40000, 49999, inclusive="both")
@@ -244,15 +255,15 @@ def load_lga_approvals(path: Path, period_label: str) -> pd.DataFrame:
 
 
 def load_population() -> pd.DataFrame:
-    """Load 2024 and 2025 LGA estimated resident population for SA."""
+    """Load current LGA population, growth components, area and density."""
 
     raw = _read_excel(POPULATION_FILE, sheet_name="Table 4", header=5)
     _require_column_positions(
         raw,
-        range(6),
+        range(11),
         source=f"{POPULATION_FILE.name} worksheet 'Table 4'",
     )
-    population = raw.iloc[:, :6].copy()
+    population = raw.iloc[:, :11].copy()
     population.columns = [
         "LGA_Code",
         "Population_LGA_Name",
@@ -260,6 +271,11 @@ def load_population() -> pd.DataFrame:
         "Population_2025",
         "Population_Change",
         "Population_Growth_Pct",
+        "Natural_Increase_2024_25",
+        "Net_Internal_Migration_2024_25",
+        "Net_Overseas_Migration_2024_25",
+        "Area_km2",
+        "Population_Density_2025",
     ]
     population["LGA_Code"] = pd.to_numeric(population["LGA_Code"], errors="coerce")
     population = population[
@@ -273,7 +289,16 @@ def load_population() -> pd.DataFrame:
             "Population_2025",
             "Population_Change",
             "Population_Growth_Pct",
+            "Natural_Increase_2024_25",
+            "Net_Internal_Migration_2024_25",
+            "Net_Overseas_Migration_2024_25",
+            "Area_km2",
+            "Population_Density_2025",
         ],
+    )
+    population["Net_Migration_2024_25"] = (
+        population["Net_Internal_Migration_2024_25"]
+        + population["Net_Overseas_Migration_2024_25"]
     )
     _require_unique(population, "LGA_Code", source="Population data")
     return population.reset_index(drop=True)
@@ -343,7 +368,15 @@ def build_lga_dashboard() -> pd.DataFrame:
     _require_key_coverage(full, population, "LGA_Code", source="Population data")
     _require_key_coverage(full, income, "LGA_Code", source="Census income data")
 
-    full = full.rename(columns={"Dwelling_Approvals": "Approvals_2024_25"})
+    full = full.rename(
+        columns={
+            "House_Approvals": "House_Approvals_2024_25",
+            "Other_Residential_Approvals": (
+                "Other_Residential_Approvals_2024_25"
+            ),
+            "Dwelling_Approvals": "Approvals_2024_25",
+        }
+    )
     ytd = ytd[["LGA_Code", "Dwelling_Approvals"]].rename(
         columns={"Dwelling_Approvals": "Approvals_2025_26_FYTD"}
     )
@@ -362,12 +395,63 @@ def build_lga_dashboard() -> pd.DataFrame:
         joined["Population_2025"],
         scale=1000,
     ).round(2)
+    joined["House_Approvals_per_1000"] = _safe_ratio(
+        joined["House_Approvals_2024_25"],
+        joined["Population_2025"],
+        scale=1000,
+    ).round(2)
+    joined["Other_Residential_Approvals_per_1000"] = _safe_ratio(
+        joined["Other_Residential_Approvals_2024_25"],
+        joined["Population_2025"],
+        scale=1000,
+    ).round(2)
+    joined["Residual_Approval_Units_2024_25"] = (
+        joined["Approvals_2024_25"]
+        - joined["House_Approvals_2024_25"]
+        - joined["Other_Residential_Approvals_2024_25"]
+    )
+    joined["Other_Residential_Approval_Share_Pct"] = _safe_ratio(
+        joined["Other_Residential_Approvals_2024_25"],
+        joined["Approvals_2024_25"],
+        scale=100,
+    ).round(1)
+    positive_growth = joined["Population_Change"].gt(0)
+    joined["Approvals_per_100_New_Residents"] = _safe_ratio(
+        joined["Approvals_2024_25"],
+        joined["Population_Change"].where(positive_growth),
+        scale=100,
+    ).round(1)
     joined["Rent_to_Income_Proxy"] = _safe_ratio(
         joined["Total_Median"],
         joined["Median_Weekly_Household_Income_2021"],
     ).round(4)
     joined["Rent_to_Income_Proxy_Pct"] = (
         joined["Rent_to_Income_Proxy"] * 100
+    ).round(1)
+    eligible_unit_sample = joined["Unit_Total_Count"].ge(10)
+    eligible_house_sample = joined["House_Total_Count"].ge(10)
+    eligible_type_comparison = eligible_unit_sample & eligible_house_sample
+    joined["Unit_Rent_to_Income_Proxy"] = _safe_ratio(
+        joined["Unit_Total_Median"],
+        joined["Median_Weekly_Household_Income_2021"],
+    ).where(eligible_unit_sample).round(4)
+    joined["Unit_Rent_to_Income_Proxy_Pct"] = (
+        joined["Unit_Rent_to_Income_Proxy"] * 100
+    ).round(1)
+    joined["House_Rent_to_Income_Proxy"] = _safe_ratio(
+        joined["House_Total_Median"],
+        joined["Median_Weekly_Household_Income_2021"],
+    ).where(eligible_house_sample).round(4)
+    joined["House_Rent_to_Income_Proxy_Pct"] = (
+        joined["House_Rent_to_Income_Proxy"] * 100
+    ).round(1)
+    joined["House_Unit_Rent_Gap"] = (
+        joined["House_Total_Median"] - joined["Unit_Total_Median"]
+    ).where(eligible_type_comparison)
+    joined["House_Unit_Rent_Premium_Pct"] = _safe_ratio(
+        joined["House_Unit_Rent_Gap"],
+        joined["Unit_Total_Median"].where(eligible_type_comparison),
+        scale=100,
     ).round(1)
     joined["Eligible_for_Score"] = joined["Total_Count"].ge(10)
     joined = calculate_pressure_index(joined)
@@ -380,17 +464,38 @@ def build_lga_dashboard() -> pd.DataFrame:
         "Unit_Total_Median",
         "House_Total_Median",
         "Total_Count",
+        "Unit_Total_Count",
+        "House_Total_Count",
         "Sample_Quality",
         "Median_Weekly_Household_Income_2021",
         "Rent_to_Income_Proxy",
         "Rent_to_Income_Proxy_Pct",
+        "Unit_Rent_to_Income_Proxy",
+        "Unit_Rent_to_Income_Proxy_Pct",
+        "House_Rent_to_Income_Proxy",
+        "House_Rent_to_Income_Proxy_Pct",
+        "House_Unit_Rent_Gap",
+        "House_Unit_Rent_Premium_Pct",
         "Population_2024",
         "Population_2025",
         "Population_Change",
         "Population_Growth_Pct",
+        "Natural_Increase_2024_25",
+        "Net_Internal_Migration_2024_25",
+        "Net_Overseas_Migration_2024_25",
+        "Net_Migration_2024_25",
+        "Area_km2",
+        "Population_Density_2025",
+        "House_Approvals_2024_25",
+        "Other_Residential_Approvals_2024_25",
+        "Residual_Approval_Units_2024_25",
         "Approvals_2024_25",
         "Approvals_2025_26_FYTD",
+        "House_Approvals_per_1000",
+        "Other_Residential_Approvals_per_1000",
         "Approvals_per_1000",
+        "Other_Residential_Approval_Share_Pct",
+        "Approvals_per_100_New_Residents",
         "Affordability_Pressure_Score",
         "Demand_Pressure_Score",
         "Supply_Gap_Score",
@@ -411,18 +516,32 @@ def build_state_approvals() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     raw = _read_excel(APPROVALS_STATE_FILE, sheet_name="Data1", header=9)
     _require_columns(
         raw,
-        ["Series ID", "A422466C"],
+        ["Series ID", "A418757A", "A421628R", "A422466C"],
         source=f"{APPROVALS_STATE_FILE.name} worksheet 'Data1'",
     )
-    monthly = raw[["Series ID", "A422466C"]].copy()
-    monthly.columns = ["Month", "Dwelling_Approvals"]
+    monthly = raw[
+        ["Series ID", "A418757A", "A421628R", "A422466C"]
+    ].copy()
+    monthly.columns = [
+        "Month",
+        "House_Approvals",
+        "Non_House_Approvals",
+        "Dwelling_Approvals",
+    ]
     monthly["Month"] = pd.to_datetime(monthly["Month"], errors="coerce")
-    monthly["Dwelling_Approvals"] = pd.to_numeric(
-        monthly["Dwelling_Approvals"], errors="coerce"
+    monthly = _numeric(
+        monthly,
+        [
+            "House_Approvals",
+            "Non_House_Approvals",
+            "Dwelling_Approvals",
+        ],
     )
     monthly = monthly[
         (monthly["Month"] >= "2021-01-01")
         & monthly["Month"].notna()
+        & monthly["House_Approvals"].notna()
+        & monthly["Non_House_Approvals"].notna()
         & monthly["Dwelling_Approvals"].notna()
     ].sort_values("Month")
     if monthly.empty:
@@ -433,6 +552,30 @@ def build_state_approvals() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     monthly["Rolling_3_Month_Avg"] = (
         monthly["Dwelling_Approvals"].rolling(3, min_periods=3).mean().round(1)
     )
+    monthly["Non_House_Approval_Share_Pct"] = _safe_ratio(
+        monthly["Non_House_Approvals"],
+        monthly["Dwelling_Approvals"],
+        scale=100,
+    ).round(1)
+    monthly["Rolling_12_Month_Total"] = (
+        monthly["Dwelling_Approvals"].rolling(12, min_periods=12).sum()
+    )
+    monthly["Monthly_YoY_Change_Pct"] = (
+        _safe_ratio(
+            monthly["Dwelling_Approvals"],
+            monthly["Dwelling_Approvals"].shift(12),
+            scale=100,
+        )
+        - 100
+    ).round(1)
+    monthly["Rolling_12_Month_YoY_Change_Pct"] = (
+        _safe_ratio(
+            monthly["Rolling_12_Month_Total"],
+            monthly["Rolling_12_Month_Total"].shift(12),
+            scale=100,
+        )
+        - 100
+    ).round(1)
     monthly["Series_Type"] = "Original"
 
     annual = (
@@ -463,6 +606,25 @@ def build_state_approvals() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         )
         .sort_values("Year")
     )
+    prior_ytd = ytd.set_index("Year")["YTD_Dwelling_Approvals"]
+    prior_months = ytd.set_index("Year")["Months_Compared"]
+    ytd["Prior_Year_YTD_Dwelling_Approvals"] = (
+        ytd["Year"].sub(1).map(prior_ytd)
+    )
+    ytd["Prior_Year_Months_Compared"] = (
+        ytd["Year"].sub(1).map(prior_months)
+    )
+    comparable_period = ytd["Months_Compared"].eq(
+        ytd["Prior_Year_Months_Compared"]
+    )
+    ytd["YTD_YoY_Change_Pct"] = (
+        _safe_ratio(
+            ytd["YTD_Dwelling_Approvals"],
+            ytd["Prior_Year_YTD_Dwelling_Approvals"].where(comparable_period),
+            scale=100,
+        )
+        - 100
+    ).round(1)
     ytd["Comparison_Label"] = f"January–{monthly.iloc[-1]['Month'].strftime('%B')}"
     return monthly, annual, ytd
 
@@ -494,6 +656,97 @@ def validate_outputs(lga: pd.DataFrame, monthly: pd.DataFrame) -> None:
         raise ValueError("Monthly approvals are not chronological.")
     if (monthly["Dwelling_Approvals"] < 0).any():
         raise ValueError("Negative dwelling approvals detected.")
+
+    _require_columns(
+        lga,
+        [
+            "Population_Change",
+            "Natural_Increase_2024_25",
+            "Net_Internal_Migration_2024_25",
+            "Net_Overseas_Migration_2024_25",
+            "House_Approvals_2024_25",
+            "Other_Residential_Approvals_2024_25",
+            "Residual_Approval_Units_2024_25",
+            "Approvals_2024_25",
+            "Other_Residential_Approval_Share_Pct",
+            "Unit_Total_Count",
+            "House_Total_Count",
+            "Unit_Rent_to_Income_Proxy",
+            "House_Rent_to_Income_Proxy",
+            "House_Unit_Rent_Gap",
+        ],
+        source="LGA dashboard output",
+    )
+    _require_columns(
+        monthly,
+        [
+            "House_Approvals",
+            "Non_House_Approvals",
+            "Non_House_Approval_Share_Pct",
+        ],
+        source="Monthly approvals output",
+    )
+    population_component_total = (
+        lga["Natural_Increase_2024_25"]
+        + lga["Net_Internal_Migration_2024_25"]
+        + lga["Net_Overseas_Migration_2024_25"]
+    )
+    if not lga["Population_Change"].eq(population_component_total).all():
+        raise ValueError("Population change does not reconcile to its components.")
+    approval_component_total = (
+        lga["House_Approvals_2024_25"]
+        + lga["Other_Residential_Approvals_2024_25"]
+        + lga["Residual_Approval_Units_2024_25"]
+    )
+    if not lga["Approvals_2024_25"].eq(approval_component_total).all():
+        raise ValueError("LGA dwelling approvals do not reconcile to their components.")
+    if (lga["Residual_Approval_Units_2024_25"] < 0).any():
+        raise ValueError("Negative residual LGA approval units detected.")
+    if (
+        lga["Other_Residential_Approval_Share_Pct"]
+        .dropna()
+        .between(0, 100, inclusive="both")
+        .eq(False)
+        .any()
+    ):
+        raise ValueError("LGA other-residential approval share is outside 0–100%.")
+    invalid_unit_proxy = ~lga["Unit_Total_Count"].ge(10) & lga[
+        "Unit_Rent_to_Income_Proxy"
+    ].notna()
+    invalid_house_proxy = ~lga["House_Total_Count"].ge(10) & lga[
+        "House_Rent_to_Income_Proxy"
+    ].notna()
+    invalid_type_gap = ~(
+        lga["Unit_Total_Count"].ge(10) & lga["House_Total_Count"].ge(10)
+    ) & lga["House_Unit_Rent_Gap"].notna()
+    if (
+        invalid_unit_proxy.any()
+        or invalid_house_proxy.any()
+        or invalid_type_gap.any()
+    ):
+        raise ValueError("Type-specific rent proxy bypassed its sample threshold.")
+    if (
+        monthly[["House_Approvals", "Non_House_Approvals"]]
+        .lt(0)
+        .any()
+        .any()
+    ):
+        raise ValueError("Negative dwelling approvals detected.")
+    monthly_reconciliation_gap = (
+        monthly["House_Approvals"]
+        + monthly["Non_House_Approvals"]
+        - monthly["Dwelling_Approvals"]
+    ).abs()
+    if monthly_reconciliation_gap.gt(1).any():
+        raise ValueError("Monthly approval components differ from total by more than 1.")
+    if (
+        monthly["Non_House_Approval_Share_Pct"]
+        .dropna()
+        .between(0, 100, inclusive="both")
+        .eq(False)
+        .any()
+    ):
+        raise ValueError("Monthly non-house approval share is outside 0–100%.")
 
 
 def run_pipeline() -> None:

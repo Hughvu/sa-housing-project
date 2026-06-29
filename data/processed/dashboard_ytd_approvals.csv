@@ -1,7 +1,7 @@
-Year,YTD_Dwelling_Approvals,Months_Compared,Comparison_Label
-2021,5192,4,January–April
-2022,3943,4,January–April
-2023,3677,4,January–April
-2024,3405,4,January–April
-2025,4864,4,January–April
-2026,4800,4,January–April
+Year,YTD_Dwelling_Approvals,Months_Compared,Prior_Year_YTD_Dwelling_Approvals,Prior_Year_Months_Compared,YTD_YoY_Change_Pct,Comparison_Label
+2021,5192,4,,,,January–April
+2022,3943,4,5192.0,4.0,-24.1,January–April
+2023,3677,4,3943.0,4.0,-6.7,January–April
+2024,3405,4,3677.0,4.0,-7.4,January–April
+2025,4864,4,3405.0,4.0,42.8,January–April
+2026,4800,4,4864.0,4.0,-1.3,January–April

@@ -1,5 +1,7 @@
 # Source register
 
+## Implemented production sources
+
 | Dataset | Authority | Reference period | Local file | Use | Key caveat |
 |---|---|---|---|---|---|
 | Private Rent Report | SA Housing Trust / Consumer and Business Services | 1 Oct–31 Dec 2025 | `data/raw/rent/private-rental-report-2025-12.xlsx` | LGA median rents and bond counts | Quarterly bond lodgements; counts 1–5 suppressed; totals rounded |
@@ -15,6 +17,49 @@
 - Building approvals: https://www.abs.gov.au/statistics/industry/building-and-construction/building-approvals-australia/latest-release
 - Regional population: https://www.abs.gov.au/statistics/people/population/regional-population/latest-release
 - Census DataPacks: https://www.abs.gov.au/census/find-census-data/datapacks
+
+The production index uses only these implemented local sources. The expanded
+population and approval context fields come from the same Regional Population
+and Building Approvals files; they are not additional score inputs.
+
+## Candidate and contextual sources
+
+These authoritative sources have been researched but are not production inputs.
+
+| Dataset | Authority | Latest verified period | Geography | Proposed layer | Key caveat |
+|---|---|---|---|---|---|
+| Building Activity | ABS | Dec quarter 2025, released 8 Apr 2026 | State/territory | State delivery context | Survey estimates of commencements, completions and work; subject to revision and generally not reliable at LGA level |
+| Census Rent Affordability Indicator and tenure | ABS | 2021 Census | LGA and other Census geographies | Historical local context | Historical baseline; undetermined income/cost cases and changed comparability rules must remain visible |
+| Population Projections for SA and Regions | PlanSA | 2021–2051 state; local horizon 2021–2041 | State, region, LGA and SA2 products | Scenario context | Conditional migration and natural-change assumptions; not an observed forecast outcome |
+| Land Supply Dashboard | PlanSA | Live dashboard; Greater Adelaide focus | Greater Adelaide | Regional land context | Unequal statewide coverage prevents a 71-area score |
+| Planning Performance Indicators | State Planning Commission / PlanSA | 2024–25 annual report | South Australia planning system | State planning context | Applications and assessment performance are not dwelling completions |
+| Report on Government Services — Housing | Productivity Commission | 2026 report; primarily 30 Jun 2025/2024–25 data | State/territory | State social-housing context | Eligibility, allocation and service models differ across jurisdictions |
+| Specialist Homelessness Services | AIHW | 2024–25 | State/territory and selected cohorts | State service-demand context | Measures service clients and responses, not prevalence; SA collection changes affect trend interpretation |
+| 20-Year State Infrastructure Strategy | Infrastructure SA | 2025 strategy | State and strategic regions | Strategic context | Planning evidence, not quantitative LGA service-capacity data |
+
+### Candidate source URLs
+
+- Building Activity:
+  https://www.abs.gov.au/statistics/industry/building-and-construction/building-activity-australia/latest-release
+- ABS 2021 Census:
+  https://www.abs.gov.au/census/find-census-data
+- AIHW housing-affordability concepts:
+  https://www.aihw.gov.au/reports/australias-welfare/housing-affordability
+- PlanSA population projections:
+  https://plan.sa.gov.au/__data/assets/pdf_file/0005/1236767/Population-Projections-for-South-Australia-and-Regions-2021-to-2051-Summary.pdf
+- PlanSA Land Supply Dashboard:
+  https://plan.sa.gov.au/state_snapshot/land_supply/land-supply-dashboard
+- PlanSA performance indicators:
+  https://plan.sa.gov.au/our_planning_system/schemes/performance_indicators
+- Productivity Commission housing data:
+  https://www.pc.gov.au/ongoing/report-on-government-services/housing-homelessness/housing/
+- AIHW Specialist Homelessness Services:
+  https://www.aihw.gov.au/reports/homelessness-services/specialist-homelessness-services-annual-report/contents/summary
+- Infrastructure SA strategy:
+  https://www.infrastructure.sa.gov.au/20-year-strategy/2025-Strategy
+
+Candidate sources must pass the admission criteria in
+`docs/analytical_framework.md` before implementation.
 
 ## Refresh protocol
 

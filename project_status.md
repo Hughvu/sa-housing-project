@@ -39,15 +39,21 @@ validation results, source updates and known limitations.
 
 ### Verification
 
-- Baseline pipeline rebuild and Streamlit automated smoke test passed before
-  the current testing, cleanup and dashboard-polish phase.
+- Final pipeline rebuild: passed.
+- Final automated test suite: 57 passed in 6.85 seconds.
+- Browser verification covered all six tabs at the default desktop viewport
+  and a 390 × 844 narrow viewport.
+- Empty-filter recovery displayed correctly across the filtered LGA analysis
+  tabs.
+- Narrow-layout width was 390 pixels with no horizontal page overflow, and the
+  browser console reported no errors.
 - Current output: 71 local areas, 53 eligible and completely scored.
 - Latest state approvals period: April 2026.
-- Current integration verification is pending. Before release, rerun
-  `python -m src.pipeline`, `pytest -q` and browser checks at desktop and narrow
-  widths, then record the exact results here.
+- The BA foundation DOCX passed heading, section and accessibility structure
+  audits with zero accessibility findings. Page-image visual QA could not be
+  completed because LibreOffice is not installed in this environment.
 
-### 2026-06-28 — Finalisation work in progress
+### 2026-06-28 — Finalisation complete
 
 - Expanded source-contract validation for missing files, worksheets, ZIP
   members, columns, duplicate join keys and incomplete key coverage.
@@ -59,9 +65,6 @@ validation results, source updates and known limitations.
 - Clarified that the 71 output records are ABS-coded local areas: 68
   incorporated LGAs plus three Unincorporated SA areas.
 - Created the Business Analysis foundation document under `docs/`.
-
-Final integrated pipeline, test and browser results are intentionally pending
-until the implementation review is complete.
 
 ### Known evidence gaps
 
@@ -82,3 +85,51 @@ until the implementation review is complete.
   methodologically compatible update is available.
 - Add a separate infrastructure-readiness module only after capacity measures,
   geographic coverage and scoring assumptions are documented and tested.
+
+## 2026-06-29 — Expanded evidence documentation
+
+### Documented implementation
+
+- Documented the implemented type-specific rent measures, population-change
+  components, migration, density, dwelling-type approval composition,
+  population-normalised rates and state approval trend calculations.
+- Defined a three-layer evidence model: scored LGA index, non-scored LGA
+  context, and state/regional context.
+- Classified fields and proposed sources as observed, derived, proxy or
+  scenario.
+- Added a geography-and-period compatibility matrix, analytical interpretation
+  workflow and mandatory source-admission criteria.
+- Added an authoritative research roadmap covering delivery, land supply,
+  planning performance, population scenarios, social housing, homelessness and
+  infrastructure evidence.
+
+### Model status
+
+The Housing Pressure Index remains unchanged at 50% affordability pressure, 25%
+population-demand pressure and 25% supply gap. None of the expanded contextual
+metrics changes ranking.
+
+### Implementation and verification
+
+- Expanded the production pipeline and regenerated the LGA, monthly and YTD
+  dashboard datasets without changing any Housing Pressure Index value,
+  category or eligibility result.
+- Added strict reconciliation and boundary tests for population components,
+  approval composition, rental sample thresholds, rolling windows and
+  like-for-like YTD comparisons.
+- Added richer analyst views for index drivers, dwelling-type rents, population
+  change, approval composition and state pipeline momentum.
+- Raised the minimum Streamlit version to 1.51 for the supported chart-width
+  API and added a CI drift check for regenerated datasets.
+- Removed tracked operating-system metadata, a redundant notebook checkpoint,
+  a zero-byte notebook placeholder and stale local pytest cache directories as
+  release-hygiene cleanup.
+- Final pipeline rebuild: passed.
+- Final automated test suite: 70 passed in 5.97 seconds.
+- Streamlit runtime harness: six tabs, 12 Plotly charts, eight data tables and
+  no application exceptions.
+- Browser verification: all six tabs passed at 1280 × 720 and 390 × 844; the
+  narrow viewport had no horizontal page overflow and the browser console
+  reported no warnings or errors.
+- Empty-filter recovery was confirmed with the Streamlit runtime harness across
+  all three filtered LGA analysis tabs.

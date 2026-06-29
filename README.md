@@ -13,6 +13,10 @@ or an infrastructure-capacity model.
 - Replaced suburb rent thresholds with a transparent LGA-level relative index.
 - Joined SA Housing Trust LGA rent data to ABS LGA approvals.
 - Added ABS 2024–25 population growth and population-normalised approvals.
+- Added non-scored LGA context for population-change components, density,
+  dwelling-type approvals and type-specific rental comparisons.
+- Added state approval composition, rolling totals and like-for-like
+  year-on-year trend measures.
 - Added a rent-to-income screening proxy using ABS 2021 Census household income.
 - Excluded rental observations with fewer than 10 published quarterly bonds
   from scoring.
@@ -60,6 +64,25 @@ again to produce the 0–100 **Housing Pressure Index**:
 - Very Low: below 20
 
 See [`docs/data_dictionary.md`](docs/data_dictionary.md) for field definitions.
+The expanded evidence design and interpretation workflow are documented in
+[`docs/analytical_framework.md`](docs/analytical_framework.md).
+
+## Evidence layers
+
+The dashboard deliberately separates three layers:
+
+1. **Scored LGA index** — only the unchanged 50/25/25 affordability, population
+   growth and approvals-per-1,000 model affects ranking.
+2. **Non-scored LGA context** — rent by dwelling type, migration and natural
+   increase, density, approval composition and descriptive flow ratios explain
+   local conditions without changing the score.
+3. **State/regional context** — state approval trends are implemented;
+   delivery, land supply, projections, social housing and infrastructure remain
+   candidate contextual modules.
+
+Fields are documented as observed, derived, proxy or scenario. A candidate
+source is not an implemented source, and no contextual metric is silently added
+to the index.
 
 ## Important limitations
 
@@ -74,6 +97,11 @@ See [`docs/data_dictionary.md`](docs/data_dictionary.md) for field definitions.
 - Infrastructure capacity is deliberately not scored. A credible module needs
   capacity data for water, wastewater, schools, health and transport, as well
   as land-release sequencing.
+- Population components are official estimates. The approvals-per-100-new-
+  residents ratio is descriptive and only shown for positive population change;
+  it is not a sufficiency target.
+- House/non-house approvals, approvals, commencements, completions and occupied
+  supply describe different stages and must not be used interchangeably.
 
 ## Project structure
 
@@ -85,6 +113,7 @@ tests/                         Automated integrity and model tests
 data/raw/                      Immutable source files
 data/processed/                Rebuildable dashboard datasets
 docs/data_dictionary.md        Output field definitions
+docs/analytical_framework.md   Evidence layers and interpretation rules
 docs/source_register.md        Sources, periods and caveats
 project_status.md              Chronological implementation log
 ```
@@ -116,8 +145,9 @@ pytest -q
 ```
 
 GitHub Actions repeats the rebuild and tests on Linux with Python 3.10 and
-Python 3.12. A local Streamlit/browser review is still required for material
-interface changes.
+Python 3.12. Material interface changes also require local desktop and narrow
+viewport checks; the latest verification results are recorded in
+`project_status.md`.
 
 ## Geography note
 
