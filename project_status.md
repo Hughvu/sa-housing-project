@@ -133,3 +133,14 @@ metrics changes ranking.
   reported no warnings or errors.
 - Empty-filter recovery was confirmed with the Streamlit runtime harness across
   all three filtered LGA analysis tabs.
+
+### Production deployment
+
+- Public dashboard:
+  https://sa-housing-project-9u83nxa3hjxyuwcjgpwwh2.streamlit.app/
+- GitHub `main` was fast-forwarded to verified release commit `42d98ad8`, and
+  the resulting remote CI run passed.
+- Production verification confirmed all six expanded dashboard tabs at desktop
+  and 390 × 844 mobile width.
+- The production mobile viewport had no horizontal page overflow, and the
+  browser console reported no warnings or errors.

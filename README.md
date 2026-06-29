@@ -4,6 +4,8 @@ A reproducible Business Analyst portfolio project that compares rental-cost
 pressure, population growth and approved housing supply across South Australian
 Local Government Areas (LGAs).
 
+[Open the live dashboard](https://sa-housing-project-9u83nxa3hjxyuwcjgpwwh2.streamlit.app/)
+
 The application is intentionally described as a **relative decision-support
 tool**. It is not a forecast, a measure of individual household rental stress,
 or an infrastructure-capacity model.
