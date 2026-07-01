@@ -181,7 +181,7 @@ def load_data() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]
 def show_plotly_chart(figure: go.Figure) -> None:
     """Render a responsive chart with consistent accessible presentation."""
     figure.update_layout(
-        font={"size": 14},
+        font={"size": 14, "family": "system-ui, sans-serif"},
         margin={"l": 20, "r": 20, "t": 70, "b": 45},
         legend_title_text="",
         hoverlabel={"font_size": 14},
@@ -278,16 +278,18 @@ with tabs[0]:
     col2.metric(
         "Median rent-to-income proxy",
         f"{scored['Rent_to_Income_Proxy_Pct'].median():.1f}%",
-        help="Quarterly median weekly rent divided by 2021 Census median weekly household income.",
+        help="December-quarter 2025 median weekly rent divided by 2021 Census median weekly household income.",
     )
     col3.metric(
         "Median approvals per 1,000",
         f"{scored['Approvals_per_1000'].median():.1f}",
         help="2024–25 dwelling approvals divided by June 2025 population.",
     )
+    delta_val = latest["Dwelling_Approvals"] - monthly.iloc[-2]["Dwelling_Approvals"]
     col4.metric(
         f"State approvals — {latest['Month'].strftime('%b %Y')}",
         f"{latest['Dwelling_Approvals']:,.0f}",
+        delta=f"{delta_val:+,.0f} vs prior month",
         help="ABS original series; approvals are permits, not completed homes.",
     )
 
@@ -481,8 +483,8 @@ with tabs[1]:
         p2.metric(
             "Rent/income proxy",
             f"{profile['Rent_to_Income_Proxy_Pct']:.1f}%",
-            help="December-quarter 2025 median rent divided by 2021 "
-            "Census median household income.",
+            help="December-quarter 2025 median weekly rent divided by 2021 "
+            "Census median weekly household income.",
         )
         p3.metric(
             "Population growth",
@@ -518,7 +520,7 @@ with tabs[1]:
             title=f"What drives {profile_name}'s relative index?",
             labels={"Percentile score": "Relative percentile score (0–100)"},
         )
-        component_fig.update_traces(marker_color="#2563EB", textposition="outside")
+        component_fig.update_traces(marker_color="#2563EB", textposition="outside", cliponaxis=False)
         component_fig.update_xaxes(range=[0, 105])
         component_fig.update_layout(height=330, showlegend=False)
         show_plotly_chart(component_fig)
@@ -989,6 +991,7 @@ with tabs[4]:
         height=430,
         hovermode="x unified",
     )
+    mix_fig.update_xaxes(dtick="M1", tickformat="%b %Y")
     mix_fig.update_yaxes(rangemode="tozero", tickformat=",")
     show_plotly_chart(mix_fig)
 
